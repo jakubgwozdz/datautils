@@ -1,11 +1,13 @@
 package pl.jgwozdz.datautils
 
+import org.apache.commons.lang3.StringUtils
 import org.w3c.dom.Element
 import org.w3c.dom.NodeList
 import org.xml.sax.InputSource
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.*
 import javax.xml.xpath.XPathConstants
 import javax.xml.xpath.XPathExpression
 import javax.xml.xpath.XPathFactory
@@ -76,12 +78,100 @@ open class XMLReporter {
 
     fun analyze(details: NodeList) {
         println("Found ${details.length} detail(s)")
-        elementsList(details)
-                .map { analyzeRecord(it) }
-                .forEach { println(it) }
+        val parsedDetails = elementsList(details).map { analyzeRecord(it) }
+
+//        parsedDetails.forEach { println(it) }
+
+        // todo: for sure it can be done better with kotlin classes
+
+        val distinctTags: Map<String, TagStats> = parsedDetails
+                .flatMap { it.keys }
+                .distinct()
+                .map { it to TagStats(it) }
+                .toMap()
+
+        parsedDetails
+                .flatMap { it.entries }
+                .forEach {
+                    val tagName = it.key
+                    val value = it.value
+                    distinctTags[tagName]?.update(value)
+                }
+
+        distinctTags.forEach { it.value.finish(parsedDetails.size) }
+
+        val allValuesSame = distinctTags.filterValues { it.allEntriesEqual }
+
+        println("all values same for specified tags: ${allValuesSame.map { "${it.key}='${it.value.pivotValue}'" }.joinToString("; ")}")
+
+        val pivotedTags = distinctTags.filterValues { !it.pivotValue.isNullOrBlank() }
+        println("empty cells mean default values: ${pivotedTags.map { "${it.key}='${it.value.pivotValue}'" }.joinToString("; ")}")
+
+
+        val tagsToDisplay = distinctTags.filterValues { !it.allEntriesEqual }.map { it.value }
+
+        val headers = tagsToDisplay.map { StringUtils.center(it.tagName, it.maxLength) }
+        val ruler = tagsToDisplay.map { StringUtils.leftPad("", it.maxLength, "-") }
+
+        println(headers)
+        println(ruler)
+
+        parsedDetails.forEach { tagValueMap ->
+            val recordsValues = tagsToDisplay.map { tag ->
+                tagValueMap[tag.tagName]
+                        .let {
+                            if (it == null || it == tag.pivotValue) "" else
+                                if (it.startsWith(" ") || it.endsWith(" ")) "'$it'"
+                                else StringUtils.abbreviate(it, tag.maxLength)
+                        }
+                        .let {
+                            if (tag.numbersOnly) StringUtils.leftPad(it, tag.maxLength)
+                            else StringUtils.rightPad(it, tag.maxLength)
+                        }
+            }
+            println(recordsValues)
+        }
     }
 
     private fun analyzeRecord(record: Element): Map<String, String> {
         return elementsList(record.childNodes).associateBy({ it -> it.tagName }, { it -> it.textContent })
+    }
+}
+
+class TagStats(val tagName: String) {
+
+    val existingValues = HashMap<String, Int>()
+    var pivotValue: String? = null
+    var allEntriesEqual = false
+    var maxLength = tagName.length
+    var numbersOnly = false
+
+    fun update(value: String) {
+        existingValues[value] = (existingValues[value] ?: 0) + 1
+//        pivotValue = pivotValue ?: value
+        if (maxLength < value.length) maxLength = value.length
+    }
+
+    fun finish(totalEntries: Int) {
+        val entriesForTag = existingValues.values.sum()
+        allEntriesEqual = (existingValues.size == 1 && entriesForTag == totalEntries)
+        numbersOnly = existingValues.all { it.key.trim().matches(Regex("^-?\\d*\\.?\\d*$")) }
+        if (maxLength > 35) maxLength = 35
+        if (maxLength < tagName.length) maxLength = tagName.length
+
+        val blanks = existingValues.keys.filter { it.isBlank() }
+        val mostOften = existingValues.maxBy { it.value }?.key
+        val mostOftenNumber = existingValues.filterKeys { it.all { it == '0' || it == '.' } }.maxBy { it.value }?.key
+
+        pivotValue = when {
+            allEntriesEqual -> mostOften
+            entriesForTag < totalEntries -> null
+            blanks.size == 1 -> blanks[0]
+            mostOften?.all { it == '0' || it == '.' } ?: false -> mostOften
+            mostOftenNumber != null && numbersOnly -> mostOftenNumber
+            else -> null
+        }
+
+
     }
 }
