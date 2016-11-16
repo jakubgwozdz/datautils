@@ -7,28 +7,53 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import javax.xml.xpath.XPathConstants
+import javax.xml.xpath.XPathExpression
 import javax.xml.xpath.XPathFactory
 
 /**
  *
  */
 fun main(args: Array<String>) {
-    val pathToXml = Paths.get(System.getProperty("user.home"), "Downloads", "2016_4.xml")
-    val acctNo = "8220204121929090"
 
-    XMLReporter().launch(pathToXml, acctNo)
+    if (args.isEmpty()) {
+        println("Please provide a filename as a command-line argument")
+        return
+    }
+    val pathToXml = Paths.get(args[0])
 
+    if (args.size > 1) {
+        XMLReporter().launchForAcct(pathToXml, args[1])
+    } else {
+        XMLReporter().launchForAll(pathToXml)
+    }
 }
 
-class XMLReporter {
+fun elementsList(details: NodeList) = (0..details.length - 1)
+        .map { details.item(it) }
+        .filter { it is Element }
+        .map { it as Element }
+
+open class XMLReporter {
     private val xPathFactory = XPathFactory.newInstance()
 
-    fun expressionForAccountNr(acctNo: String) = xPathFactory.newXPath().compile("*/Acct[CSRec/CSAcctNum='$acctNo']")!!
+    fun expressionForSpecificAccount(acctNo: String) = xPathFactory.newXPath().compile("*/Acct[CSRec/CSAcctNum='$acctNo']")!!
+    fun expressionForAllAccounts() = xPathFactory.newXPath().compile("*/Acct")!!
     fun expressionForDetail() = xPathFactory.newXPath().compile("./DflRec")!!
+    fun expressionForAccountNr() = xPathFactory.newXPath().compile("./CSRec/CSAcctNum")!!
 
-    fun launch(pathToXml: Path, acctNo: String) {
+    fun launchForAcct(pathToXml: Path, acctNo: String) {
         println("Searching for account $acctNo inside $pathToXml")
-        val accountExpr = expressionForAccountNr(acctNo)
+        val accountExpr = expressionForSpecificAccount(acctNo)
+        launchForExpression(pathToXml, accountExpr)
+    }
+
+    fun launchForAll(pathToXml: Path) {
+        println("Searching for all accounts inside $pathToXml")
+        val accountExpr = expressionForAllAccounts()
+        launchForExpression(pathToXml, accountExpr)
+    }
+
+    protected fun launchForExpression(pathToXml: Path, accountExpr: XPathExpression) {
         Files.newInputStream(pathToXml).use {
             val inputSource = InputSource(it)
 
@@ -36,25 +61,27 @@ class XMLReporter {
             if (invoices is NodeList) {
                 println("Found ${invoices.length} invoice(s)")
 
-                val detailExpr = expressionForDetail()
-                (0..invoices.length - 1)
-                        .map { invoices.item(it) }
-                        .map { detailExpr.evaluate(it, XPathConstants.NODESET) }
-                        .forEach { analyze(it as NodeList) }
+                elementsList(invoices)
+                        .forEach { analyzeInvoice(it) }
             }
         }
     }
 
-    fun analyze(details: NodeList) {
-        println("Found ${details.length} detail(s)")
-        (0..details.length - 1)
-                .map { details.item(it) as Element }
-                .map { analyzeRecord(it)}
-                .forEach { println(it) }
-
+    val detailExpr = expressionForDetail()
+    val accountExpr = expressionForAccountNr()
+    fun analyzeInvoice(invoice: Element) {
+        println("Analyzing invoice for account ${accountExpr.evaluate(invoice)}")
+        analyze(detailExpr.evaluate(invoice, XPathConstants.NODESET) as NodeList)
     }
 
-    private fun analyzeRecord(it: Element): Map<String, String> {
-        throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
+    fun analyze(details: NodeList) {
+        println("Found ${details.length} detail(s)")
+        elementsList(details)
+                .map { analyzeRecord(it) }
+                .forEach { println(it) }
+    }
+
+    private fun analyzeRecord(record: Element): Map<String, String> {
+        return elementsList(record.childNodes).associateBy({ it -> it.tagName }, { it -> it.textContent })
     }
 }
