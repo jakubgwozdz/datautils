@@ -74,6 +74,7 @@ open class XMLReporter {
     fun analyzeInvoice(invoice: Element) {
         println("Analyzing invoice for account ${accountExpr.evaluate(invoice)}")
         analyze(detailExpr.evaluate(invoice, XPathConstants.NODESET) as NodeList)
+        println()
     }
 
     fun analyze(details: NodeList) {
@@ -102,22 +103,17 @@ open class XMLReporter {
 
         val allValuesSame = distinctTags.filterValues { it.allEntriesEqual }
 
-        println("all values same for specified tags: ${allValuesSame.map { "${it.key}='${it.value.pivotValue}'" }.joinToString("; ")}")
-
-        val pivotedTags = distinctTags.filterValues { !it.pivotValue.isNullOrBlank() }
-        println("empty cells mean default values: ${pivotedTags.map { "${it.key}='${it.value.pivotValue}'" }.joinToString("; ")}")
-
+        val pivotedTags = distinctTags
+                .filterNot { allValuesSame.containsKey(it.key) }
+                .filterValues { !it.pivotValue.isNullOrBlank() }
 
         val tagsToDisplay = distinctTags.filterValues { !it.allEntriesEqual }.map { it.value }
 
         val headers = tagsToDisplay.map { StringUtils.center(it.tagName, it.maxLength) }
         val ruler = tagsToDisplay.map { StringUtils.leftPad("", it.maxLength, "-") }
 
-        println(headers)
-        println(ruler)
-
-        parsedDetails.forEach { tagValueMap ->
-            val recordsValues = tagsToDisplay.map { tag ->
+        val records = parsedDetails.map { tagValueMap ->
+            tagsToDisplay.map { tag ->
                 tagValueMap[tag.tagName]
                         .let {
                             if (it == null || it == tag.pivotValue) "" else
@@ -129,8 +125,16 @@ open class XMLReporter {
                             else StringUtils.rightPad(it, tag.maxLength)
                         }
             }
-            println(recordsValues)
         }
+
+        println(headers)
+        println(ruler)
+        records.forEach {  println(it) }
+
+        println("all values same for specified tags: ${allValuesSame.map { "${it.key}='${it.value.pivotValue}'" }.joinToString("; ")}")
+
+        println("empty cells mean default values: ${pivotedTags.map { "${it.key}='${it.value.pivotValue}'" }.joinToString("; ")}")
+
     }
 
     private fun analyzeRecord(record: Element): Map<String, String> {
