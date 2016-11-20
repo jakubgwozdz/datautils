@@ -37,6 +37,8 @@ public class JavaFXApp extends Application {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("XML Scanner");
 
+        fileLoader.selectedFileProperty().addListener((observable, oldValue, newValue) -> System.out.println("selectedFile changed from `" + oldValue + "' to '" + newValue + "'"));
+
         initRootLayout();
         fileLoader.setDirectoryToScan("C:\\Users\\gwozd_000\\Downloads");
     }
@@ -64,7 +66,7 @@ public class JavaFXApp extends Application {
             // Load root layout from fxml file.
             FXMLLoader loader = new FXMLLoader();
             URL resource = JavaFXApp.class.getResource("view/XMLScan.fxml");
-            System.out.println("Opening file " + resource);
+//            System.out.println("Opening file " + resource);
             loader.setLocation(resource);
             rootLayout = loader.load();
             rootController = loader.getController();
