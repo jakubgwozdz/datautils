@@ -4,12 +4,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>pl.jgwozdz.datautils</groupId>
-    <artifactId>datautils</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <groupId>pl.jgwozdz.utils</groupId>
+    <artifactId>xmlscan</artifactId>
+    <version>0.1.2-SNAPSHOT</version>
 
     <properties>
         <kotlin.version>1.0.5-2</kotlin.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
     <dependencies>
@@ -109,7 +111,7 @@
                         <configuration>
                             <archive>
                                 <manifest>
-                                    <mainClass>pl.jgwozdz.datautils.XMLReportKt</mainClass>
+                                    <mainClass>pl.jgwozdz.utils.xmlscan.XMLReportKt</mainClass>
                                 </manifest>
                             </archive>
                             <descriptorRefs>

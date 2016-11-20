@@ -1,4 +1,4 @@
-package pl.jgwozdz.datautils
+package pl.jgwozdz.utils.xmlscan
 
 import org.w3c.dom.NodeList
 import org.xml.sax.InputSource

@@ -1,4 +1,4 @@
-package pl.jgwozdz.datautils
+package pl.jgwozdz.utils.xmlscan
 
 import org.apache.commons.lang3.StringUtils
 import org.w3c.dom.Element

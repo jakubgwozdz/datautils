@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<BorderPane xmlns="http://javafx.com/javafx/8.0.112-ea" xmlns:fx="http://javafx.com/fxml/1"
+            prefWidth="1000" prefHeight="650"
+            fx:id="rootPane"
+            fx:controller="pl.jgwozdz.utils.xmlscan.javafx.MainAppController">
+    <center>
+        <SplitPane dividerPositions="0.4">
+            <SplitPane dividerPositions="0.5">
+                <fx:include fx:id="fileLoader" source="FileLoader.fxml"/>
+                <AnchorPane />
+            </SplitPane>
+            <AnchorPane fx:id="resultPane"/>
+        </SplitPane>
+    </center>
+</BorderPane>
+
