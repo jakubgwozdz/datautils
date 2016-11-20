@@ -5,25 +5,26 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  *
  */
-public class FileLoader {
+public class FileChooserModel {
 
-    private final StringProperty directoryToScan = new SimpleStringProperty("");
     private final ListProperty<Path> files = new SimpleListProperty<>(FXCollections.observableArrayList());
+    private final ObjectProperty<Path> directoryToScan = new SimpleObjectProperty<>(Paths.get("."));
     private final ObjectProperty<Path> selectedFile = new SimpleObjectProperty<>();
 
-    public String getDirectoryToScan() {
+    public Path getDirectoryToScan() {
         return directoryToScan.get();
     }
 
-    public StringProperty directoryToScanProperty() {
+    public ObjectProperty<Path> directoryToScanProperty() {
         return directoryToScan;
     }
 
-    public void setDirectoryToScan(String directoryToScan) {
+    public void setDirectoryToScan(Path directoryToScan) {
         this.directoryToScan.set(directoryToScan);
     }
 

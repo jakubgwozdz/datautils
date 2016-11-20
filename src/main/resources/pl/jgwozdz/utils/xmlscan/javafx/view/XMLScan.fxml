@@ -9,9 +9,9 @@
             fx:controller="pl.jgwozdz.utils.xmlscan.javafx.MainAppController">
     <center>
         <SplitPane dividerPositions="0.4">
-            <SplitPane dividerPositions="0.5">
-                <fx:include fx:id="fileLoader" source="FileLoader.fxml"/>
-                <AnchorPane />
+            <SplitPane orientation="VERTICAL" dividerPositions="0.5">
+                <fx:include fx:id="fileChooser" source="FileChooser.fxml"/>
+                <fx:include fx:id="entryChooser" source="EntryChooser.fxml"/>
             </SplitPane>
             <AnchorPane fx:id="resultPane"/>
         </SplitPane>

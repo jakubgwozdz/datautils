@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils
 import org.w3c.dom.Element
 import org.w3c.dom.NodeList
 import org.xml.sax.InputSource
+import java.io.Closeable
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -23,10 +24,12 @@ fun main(args: Array<String>) {
     }
     val pathToXml = Paths.get(args[0])
 
+    val xmlReporter = XMLReporter(pathToXml)
+    val entries = xmlReporter.getAllEntries()
     if (args.size > 1) {
-        XMLReporter().launchForAcct(pathToXml, args[1])
+        entries.filter { it.textContent == args[1] }.forEach { xmlReporter.getData(it) }
     } else {
-        XMLReporter().launchForAll(pathToXml)
+        entries.forEach { xmlReporter.getData(it) }
     }
 }
 
@@ -35,7 +38,15 @@ fun elementsList(details: NodeList) = (0..details.length - 1)
         .filter { it is Element }
         .map { it as Element }
 
-open class XMLReporter {
+open class XMLReporter(val pathToXml: Path) : Closeable {
+
+    override fun close() {
+        inputStream.close()
+    }
+
+    private val inputStream = Files.newInputStream(pathToXml)
+    private val inputSource = InputSource(inputStream)
+
     private val xPathFactory = XPathFactory.newInstance()
 
     fun expressionForSpecificAccount(acctNo: String) = xPathFactory.newXPath().compile("*/Acct[CSRec/CSAcctNum='$acctNo']")!!
@@ -43,29 +54,37 @@ open class XMLReporter {
     fun expressionForDetail() = xPathFactory.newXPath().compile("./DflRec")!!
     fun expressionForAccountNr() = xPathFactory.newXPath().compile("./CSRec/CSAcctNum")!!
 
-    fun launchForAcct(pathToXml: Path, acctNo: String) {
+    fun launchForAcct(acctNo: String) {
         println("Searching for account $acctNo inside $pathToXml")
         val accountExpr = expressionForSpecificAccount(acctNo)
-        launchForExpression(pathToXml, accountExpr)
+        launchForExpression(accountExpr)
     }
 
-    fun launchForAll(pathToXml: Path) {
+    fun launchForAll() {
         println("Searching for all accounts inside $pathToXml")
         val accountExpr = expressionForAllAccounts()
-        launchForExpression(pathToXml, accountExpr)
+        launchForExpression(accountExpr)
     }
 
-    protected fun launchForExpression(pathToXml: Path, accountExpr: XPathExpression) {
-        Files.newInputStream(pathToXml).use {
-            val inputSource = InputSource(it)
+    fun getAllEntries() : List<Element> {
+        println("pl.jgwozdz.utils.xmlscan.XMLReporter.getAllEntries")
+        val entriesExpression = xPathFactory.newXPath().compile("*/Acct/CSRec/CSAcctNum")
+        return elementsList(entriesExpression.evaluate(inputSource, XPathConstants.NODESET) as NodeList)
+    }
 
-            val invoices = accountExpr.evaluate(inputSource, XPathConstants.NODESET)
-            if (invoices is NodeList) {
-                println("Found ${invoices.length} invoice(s)")
+    fun getData(entry : Element) {
+        val mainEntryExpression = xPathFactory.newXPath().compile("./../..")
+        analyzeInvoice(mainEntryExpression.evaluate(entry, XPathConstants.NODE) as Element)
+    }
 
-                elementsList(invoices)
-                        .forEach { analyzeInvoice(it) }
-            }
+    protected fun launchForExpression(accountExpr: XPathExpression) {
+
+        val invoices = accountExpr.evaluate(inputSource, XPathConstants.NODESET)
+        if (invoices is NodeList) {
+            println("Found ${invoices.length} invoice(s)")
+
+            elementsList(invoices)
+                    .forEach { analyzeInvoice(it) }
         }
     }
 
@@ -129,7 +148,7 @@ open class XMLReporter {
 
         println(headers)
         println(ruler)
-        records.forEach {  println(it) }
+        records.forEach { println(it) }
 
         println("all values same for specified tags: ${allValuesSame.map { "${it.key}='${it.value.pivotValue}'" }.joinToString("; ")}")
 

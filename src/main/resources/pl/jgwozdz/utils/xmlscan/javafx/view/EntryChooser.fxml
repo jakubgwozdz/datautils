@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<AnchorPane prefHeight="600.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/8.0.60"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.jgwozdz.utils.xmlscan.javafx.EntryChooserController">
+   <opaqueInsets>
+      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+   </opaqueInsets>
+   <VBox alignment="CENTER" AnchorPane.bottomAnchor="5.0"
+         AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" spacing="5.0">
+      <ScrollPane fitToHeight="true" fitToWidth="true" VBox.vgrow="ALWAYS">
+         <ListView fx:id="entriesList" />
+      </ScrollPane>
+   </VBox>
+</AnchorPane>
