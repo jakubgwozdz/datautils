@@ -17,13 +17,16 @@ import javax.xml.xpath.XPathFactory
 
 
 class VersionLogic {
+
     fun version(groupId: String = "pl.jgwozdz.utils", artifactId: String): String {
         return versionFromPomXml(this.javaClass.getResourceAsStream("/META-INF/maven/$groupId/$artifactId/pom.xml"))
                 ?: versionFromPomXml(Files.newInputStream(Paths.get("pom.xml")))
                 ?: "unknown"
     }
 
-    val compile = XPathFactory.newInstance().newXPath().compile("/*[local-name()='project']/*[local-name()='version']")
+    val compile = XPathFactory.newInstance()
+            .newXPath()
+            .compile("/*[local-name()='project']/*[local-name()='version']")!!
 
     fun versionFromPomXml(inputStream: InputStream?): String? {
         if (inputStream == null)
@@ -37,10 +40,6 @@ class VersionLogic {
             println("'$e' when reading version from pom.xml")
             return null
         }
-    }
-
-    fun title(name: String, groupId: String = "pl.jgwozdz.utils", artifactId: String): String {
-        return "$name version ${version(groupId, artifactId)} compiled on ${buildDateTime()}"
     }
 
     fun buildDateTime(): String {
@@ -63,6 +62,10 @@ class VersionLogic {
                 .toLocalDateTime()
                 .let { "${it.toLocalDate()} ${it.toLocalTime().truncatedTo(ChronoUnit.MINUTES)}" }
 
+    }
+
+    fun title(name: String, groupId: String = "pl.jgwozdz.utils", artifactId: String): String {
+        return "$name version ${version(groupId, artifactId)} compiled on ${buildDateTime()}"
     }
 
 }

@@ -7,6 +7,7 @@
     <groupId>pl.jgwozdz.utils</groupId>
     <artifactId>xmlscan</artifactId>
     <version>0.1.2-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
     <properties>
         <kotlin.version>1.0.5-2</kotlin.version>
@@ -73,6 +74,14 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.5.1</version>
                 <executions>
@@ -108,7 +117,7 @@
                 <version>2.6</version>
                 <executions>
                     <execution>
-                        <id>make-assembly</id>
+                        <id>jar-with-dependencies</id>
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
@@ -122,6 +131,7 @@
                             <descriptorRefs>
                                 <descriptorRef>jar-with-dependencies</descriptorRef>
                             </descriptorRefs>
+                            <finalName>xmlscan</finalName>
                         </configuration>
                     </execution>
                 </executions>
