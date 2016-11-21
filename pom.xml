@@ -116,7 +116,7 @@
                         <configuration>
                             <archive>
                                 <manifest>
-                                    <mainClass>pl.jgwozdz.utils.xmlscan.XMLReportKt</mainClass>
+                                    <mainClass>pl.jgwozdz.utils.xmlscan.tornadofx.TornadoFXApp</mainClass>
                                 </manifest>
                             </archive>
                             <descriptorRefs>

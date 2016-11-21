@@ -1,11 +1,12 @@
 package pl.jgwozdz.utils.xmlscan.javafx.model;
 
-import javafx.beans.property.*;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.w3c.dom.Element;
-
-import java.nio.file.Path;
 
 /**
  *

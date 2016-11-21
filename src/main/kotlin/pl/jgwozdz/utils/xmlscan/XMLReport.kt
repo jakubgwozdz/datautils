@@ -67,7 +67,6 @@ open class XMLReporter(val pathToXml: Path) : Closeable {
     }
 
     fun getAllEntries() : List<Element> {
-        println("pl.jgwozdz.utils.xmlscan.XMLReporter.getAllEntries")
         val entriesExpression = xPathFactory.newXPath().compile("*/Acct/CSRec/CSAcctNum")
         return elementsList(entriesExpression.evaluate(inputSource, XPathConstants.NODESET) as NodeList)
     }
