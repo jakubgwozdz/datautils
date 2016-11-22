@@ -1,4 +1,4 @@
-package pl.jgwozdz.utils.xmlscan.tornadofx.view
+package pl.jgwozdz.utils.xmlscan.tornadofx
 
 import javafx.geometry.Pos
 import javafx.scene.control.ListView

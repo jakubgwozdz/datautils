@@ -53,7 +53,9 @@ class VersionLogic {
             }
             "jar" -> {
                 val jarURLConnection = resource.openConnection() as JarURLConnection
-                val lastModifiedTime = jarURLConnection.jarEntry.lastModifiedTime
+                val lastModifiedTime = jarURLConnection.jarFile.entries().asSequence()
+                        .map { it.lastModifiedTime }
+                        .max() ?: return "unknown"
                 jarURLConnection.inputStream.close()
                 lastModifiedTime
             }

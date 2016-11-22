@@ -1,10 +1,10 @@
-package pl.jgwozdz.utils.xmlscan.tornadofx.view
+package pl.jgwozdz.utils.xmlscan.tornadofx
 
 import javafx.geometry.Insets
-import javafx.geometry.Orientation
-import javafx.geometry.Pos
-import javafx.scene.layout.Priority
-import javafx.scene.text.TextAlignment
+import javafx.geometry.Orientation.VERTICAL
+import javafx.geometry.Pos.TOP_RIGHT
+import javafx.scene.layout.Priority.ALWAYS
+import javafx.scene.text.TextAlignment.RIGHT
 import pl.jgwozdz.utils.version.VersionLogic
 import tornadofx.*
 
@@ -25,15 +25,15 @@ class MainWindowView : View(title = VersionLogic().title(name = "XML Scanner", a
     init {
         with(root) {
             center = splitpane {
+                setDividerPositions(0.16)
                 splitpane {
-                }.apply {
+                    orientation = VERTICAL
                     setDividerPositions(0.5)
-                    orientation = Orientation.VERTICAL
+                }.apply {
                     this += fileChooserView.root
                     this += entryChooserView.root
                 }
             }.apply {
-                setDividerPositions(0.16)
                 this += analysisView.root
             }
 
@@ -41,15 +41,16 @@ class MainWindowView : View(title = VersionLogic().title(name = "XML Scanner", a
                 label {
                     text = ""
                     hboxConstraints {
-                        hGrow = Priority.ALWAYS
+                        hGrow = ALWAYS
                     }
                 }
                 progressbar(initialValue = 0.0) { }
+                separator(orientation = VERTICAL)
                 label {
                     text = VersionLogic().title(name = "XML Scanner", artifactId = "xmlscan")
-                    textAlignment = TextAlignment.RIGHT
+                    textAlignment = RIGHT
                 }
-                alignment = Pos.TOP_RIGHT
+                alignment = TOP_RIGHT
                 padding = Insets(2.0)
             }
 
@@ -59,7 +60,14 @@ class MainWindowView : View(title = VersionLogic().title(name = "XML Scanner", a
 }
 
 class AnalysisView : View() {
-    override val root = anchorpane()
+    override val root = anchorpane {
+        button("report") {
+            setOnAction {
+                println("dirToScan: " + find(MainWindowView::class).fileChooserView.model.data.dirToScan)
+//                println("selectedFile: " + find(MainWindowView::class).fileChooserView.model.data.selectedFile)
+            }
+        }
+    }
 
 }
 

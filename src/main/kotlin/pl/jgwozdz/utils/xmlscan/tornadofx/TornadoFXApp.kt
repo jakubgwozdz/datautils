@@ -1,7 +1,8 @@
 package pl.jgwozdz.utils.xmlscan.tornadofx
 
-import pl.jgwozdz.utils.xmlscan.tornadofx.view.MainWindowView
 import tornadofx.App
+import tornadofx.find
+import java.nio.file.Paths
 
 /**
  *
@@ -12,5 +13,7 @@ import tornadofx.App
 //}
 //
 class TornadoFXApp : App(MainWindowView::class) {
-
+    init {
+        find(FileChooserView::class).model.data.dirToScan = Paths.get("C:\\Users\\gwozd_000\\Downloads")
+    }
 }
