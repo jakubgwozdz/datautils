@@ -29,22 +29,25 @@ class VersionLogic {
             .compile("/*[local-name()='project']/*[local-name()='version']")!!
 
     fun versionFromPomXml(inputStream: InputStream?): String? {
-        if (inputStream == null)
-            return null
-        try {
-            inputStream.use {
-                val inputSource = InputSource(inputStream)
-                return (compile.evaluate(inputSource, XPathConstants.NODE) as Node?)?.textContent
+        when (inputStream) {
+            null -> return null
+            else -> try {
+                inputStream.use {
+                    val inputSource = InputSource(inputStream)
+                    return (compile.evaluate(inputSource, XPathConstants.NODE) as Node?)?.textContent
+                }
+            } catch (e: Exception) {
+                println("'$e' when reading version from pom.xml")
+                return null
             }
-        } catch (e: Exception) {
-            println("'$e' when reading version from pom.xml")
-            return null
         }
     }
 
     fun buildDateTime(): String {
-        val resource = this.javaClass.getResource("VersionLogic.class")
-        val fileTime = when (resource.protocol) {
+
+        val resource = javaClass.getResource("${javaClass.simpleName}.class")
+
+        val fileTime = when (resource?.protocol) {
             "file" -> {
                 Files.getLastModifiedTime(Paths.get(resource.toURI()))
             }
