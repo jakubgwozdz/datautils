@@ -86,18 +86,8 @@ class FileChooserModel(dirToScan: Path) {
     var selectedFile by property<Path>()
     fun selectedFileProperty() = getProperty(FileChooserModel::selectedFile)
 
-    init {
-        dirToScanProperty().addListener {
-            observableValue, oldVal, newVal ->
-            println("${(observableValue as Property).name} changed from '$oldVal' to '$newVal'")
-        }
-        selectedFileProperty().addListener {
-            observableValue, oldVal, newVal ->
-            println("${(observableValue as Property).name} changed from '$oldVal' to '$newVal'")
-        }
-    }
-
 }
+
 
 /**
  * for VMMV, for interaction with View and for presentation logic
