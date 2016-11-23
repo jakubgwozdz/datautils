@@ -24,6 +24,8 @@ class EntryChooserView : View() {
                 vboxConstraints { vGrow = Priority.ALWAYS }
                 listview(model.entries.value) {
                     bindSelected(model.selectedEntry)
+                }.cellFormat {
+                    text = it?.textContent
                 }
             }
         }
@@ -31,16 +33,6 @@ class EntryChooserView : View() {
     }
 
 }
-
-class Entry {
-    val elementProperty = SimpleObjectProperty<Element>()
-    var element by elementProperty
-}
-
-class EntryModel : ItemViewModel<Entry>() {
-    val element = bind { item?.elementProperty }
-}
-
 
 class EntryChooserModel() {
     val selectedEntryProperty = SimpleObjectProperty<Element>()
