@@ -20,7 +20,7 @@ class MainWindowView : View(title = VersionLogic().title(name = "XML Scanner", a
 
     val fileChooserView: FileChooserView by inject()
     val entryChooserView: EntryChooserView by inject()
-    val analysisView: AnalysisView by inject()
+    val analyzedEntryView: AnalyzedEntryView by inject()
 
     init {
         with(root) {
@@ -34,7 +34,7 @@ class MainWindowView : View(title = VersionLogic().title(name = "XML Scanner", a
                     this += entryChooserView.root
                 }
             }.apply {
-                this += analysisView.root
+                this += analyzedEntryView.root
             }
 
             bottom = hbox(spacing = 5.0) {
@@ -52,21 +52,6 @@ class MainWindowView : View(title = VersionLogic().title(name = "XML Scanner", a
                 padding = Insets(2.0)
             }
 
-        }
-    }
-
-}
-
-class AnalysisView : View() {
-    override val root = anchorpane {
-        button("report") {
-            setOnAction {
-//                val fileChooserViewModel = find(MainWindowView::class).fileChooserView.model
-//                println("Dirty: " + fileChooserViewModel.dirToScan)
-//                println("Backed: " + fileChooserViewModel.backingValue(fileChooserViewModel.dirToScan))
-//                println("FromModel: " + fileChooserModel?.dirToScan)
-//                println("selectedFile: " + find(MainWindowView::class).fileChooserView.model.data.selectedFile)
-            }
         }
     }
 

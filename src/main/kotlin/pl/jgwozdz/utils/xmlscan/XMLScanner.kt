@@ -12,17 +12,21 @@ import javax.xml.xpath.XPathFactory
 /**
  *
  */
-class XMLScanner(pathToXml: Path) : Closeable {
-    override fun close() {
-        inputStream.close()
-    }
+class XMLScanner(pathToXml: Path,
+        //language=XPath2
+                 var allEntriesXPath: String = "*/Acct/CSRec/CSAcctNum"
+) : Closeable {
 
     private val inputStream = Files.newInputStream(pathToXml)
     private val inputSource = InputSource(inputStream)
     private val xPathFactory = XPathFactory.newInstance()
 
-    //language=XPath2
-    var allEntriesXPath = "*/Acct/CSRec/CSAcctNum"
+    override fun close() {
+        inputStream.close()
+    }
+
+    // todo: externalize defaults to property file
+    // todo: make it configurable,
     //language=XPath2
     var dataXPath = "./../../DflRec"
 
@@ -57,7 +61,6 @@ class XMLScanner(pathToXml: Path) : Closeable {
                     it.let(::ScannedSingleRow)
                 }
                 .let(::ScannedData)
-
     }
 
 

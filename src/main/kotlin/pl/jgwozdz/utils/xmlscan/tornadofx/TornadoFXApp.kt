@@ -18,6 +18,7 @@ class TornadoFXApp : App(MainWindowView::class) {
     val entryToAnalyzeModel: EntryToAnalyzeModel by inject()
     val entryChooserController: EntryChooserController by inject()
     val fileChooserController: FileChooserController by inject()
+    val analyzedEntryController:AnalyzedEntryController by inject()
 
     init {
 
@@ -25,7 +26,7 @@ class TornadoFXApp : App(MainWindowView::class) {
 
         fileToScanModel.itemProperty.addListener { field, oldVal, newVal: FileToScan? ->
             xmlScanner?.close()
-            xmlScanner = newVal?.path?.let(::XMLScanner)
+            xmlScanner = newVal?.path?.let { XMLScanner(it) }
             xmlScanner?.run {
                 val allEntries = getAllEntries().map(::EntryToAnalyze)
                 entryChooserController.entries.setAll(allEntries)
@@ -34,8 +35,9 @@ class TornadoFXApp : App(MainWindowView::class) {
 
         entryToAnalyzeModel.itemProperty.addListener { field, oldVal, newVal: EntryToAnalyze? ->
             xmlScanner?.run {
-                val scannedData = newVal?.entry?.let { getData(it) }?: ScannedData(listOf())
-                scannedData.rows.forEach(::println)
+                val scannedData = newVal?.entry?.let { getData(it) } ?: ScannedData(listOf())
+//                scannedData.rows.forEach(::println)
+                analyzedEntryController.scannedData.value = scannedData
             }
 
         }
