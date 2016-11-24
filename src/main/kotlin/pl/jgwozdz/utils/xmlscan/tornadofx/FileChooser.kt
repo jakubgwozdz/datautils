@@ -4,7 +4,6 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.scene.layout.Priority.ALWAYS
-import javafx.scene.layout.Priority.NEVER
 import javafx.stage.DirectoryChooser
 import javafx.stage.Window
 import tornadofx.*
@@ -93,11 +92,8 @@ class FileChooserView : View() {
             label("Directory to scan: ")
             hbox {
                 spacing = 5.0
-                vboxConstraints { vGrow = NEVER }
                 textfield {
-                    hboxConstraints {
-                        hGrow = ALWAYS
-                    }
+                    hboxConstraints { hGrow = ALWAYS }
                     bind(property = dirToScanModel.path, converter = PathConverter())
                     validator {
                         when {
@@ -122,7 +118,7 @@ class FileChooserView : View() {
                 listview(ctrl.files) {
                     bindSelected(fileToScanModel)
                 }.cellFormat {
-                    text = it.path.fileName.toString()
+                    text = it.path?.fileName?.toString()
                 }
             }
         }
