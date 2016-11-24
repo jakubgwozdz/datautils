@@ -4,7 +4,6 @@ import pl.jgwozdz.utils.xmlscan.XMLScanner
 import tornadofx.App
 import tornadofx.find
 import tornadofx.rebind
-import java.nio.file.Paths
 
 /**
  *
@@ -16,10 +15,6 @@ import java.nio.file.Paths
 //
 class TornadoFXApp : App(MainWindowView::class) {
 
-    val fileChooserData = FileChooserModel(Paths.get("C:\\Users\\gwozd_000\\Downloads")).apply {
-        dirToScanProperty.addListener { observableValue, oldVal, newVal -> println("dirToScan changed from '$oldVal' to '$newVal'") }
-        selectedFileProperty.addListener { observableValue, oldVal, newVal -> println("selectedFile changed from '$oldVal' to '$newVal'") }
-    }
 
     val entryChooserData = EntryChooserModel().apply {
         entriesProperty.addListener { observableValue, oldVal, newVal -> println("entries changed from '$oldVal' to '$newVal'") }
@@ -28,17 +23,18 @@ class TornadoFXApp : App(MainWindowView::class) {
 
     var xmlScanner: XMLScanner? = null
 
+    val fileToScanModel: FileToScanModel by inject()
+
     init {
 
-        find(FileChooserView::class).model.rebind { data = fileChooserData }
+//        find(FileChooserView::class).model.rebind { data = fileChooserData }
         find(EntryChooserView::class).model.rebind { data = entryChooserData }
-        find(AnalysisView::class).fileChooserModel = fileChooserData
 
-        fileChooserData.selectedFileProperty.addListener { observableValue, oldPath, newPath ->
+        fileToScanModel.itemProperty.addListener { field, oldVal, newVal: FileToScan? ->
             xmlScanner?.close()
-            xmlScanner = newPath?.let(::XMLScanner)?.apply {
+            xmlScanner = newVal?.path?.let { XMLScanner(it) }
+            xmlScanner?.run {
                 val allEntries = getAllEntries()
-                entryChooserData.entries.setAll(allEntries)
                 entryChooserData.entries.setAll(allEntries)
             }
         }

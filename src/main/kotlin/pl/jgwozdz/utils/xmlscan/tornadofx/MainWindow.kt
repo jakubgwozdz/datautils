@@ -63,15 +63,14 @@ class AnalysisView : View() {
     override val root = anchorpane {
         button("report") {
             setOnAction {
-                val fileChooserViewModel = find(MainWindowView::class).fileChooserView.model
-                println("Dirty: " + fileChooserViewModel.dirToScan)
-                println("Backed: " + fileChooserViewModel.backingValue(fileChooserViewModel.dirToScan))
-                println("FromModel: " + fileChooserModel?.dirToScan)
+//                val fileChooserViewModel = find(MainWindowView::class).fileChooserView.model
+//                println("Dirty: " + fileChooserViewModel.dirToScan)
+//                println("Backed: " + fileChooserViewModel.backingValue(fileChooserViewModel.dirToScan))
+//                println("FromModel: " + fileChooserModel?.dirToScan)
 //                println("selectedFile: " + find(MainWindowView::class).fileChooserView.model.data.selectedFile)
             }
         }
     }
-    var fileChooserModel: FileChooserModel? = null
 
 }
 
