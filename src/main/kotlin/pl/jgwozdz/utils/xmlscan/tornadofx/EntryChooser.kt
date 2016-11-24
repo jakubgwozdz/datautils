@@ -33,14 +33,13 @@ class EntryChooserView : View() {
     override val root = anchorpane {
         prefWidth = 200.0
         prefHeight = 400.0
-        vbox {
-            spacing = 5.0
-            anchorpaneConstraints { leftAnchor = 5.0; rightAnchor = 5.0; topAnchor = 5.0; bottomAnchor = 5.0 }
+        vbox(spacing = 5.0) {
+            allAnchors = 5.0
             label("Found entries: ")
             scrollpane {
                 isFitToHeight = true
                 isFitToWidth = true
-                vboxConstraints { vGrow = Priority.ALWAYS }
+                vgrow = Priority.ALWAYS
                 listview(ctrl.entries) {
                     bindSelected(entryToAnalyzeModel)
                 }.cellFormat {

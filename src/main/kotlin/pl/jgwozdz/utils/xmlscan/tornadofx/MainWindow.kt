@@ -40,9 +40,7 @@ class MainWindowView : View(title = VersionLogic().title(name = "XML Scanner", a
             bottom = hbox(spacing = 5.0) {
                 label {
                     text = ""
-                    hboxConstraints {
-                        hGrow = ALWAYS
-                    }
+                    hgrow = ALWAYS
                 }
                 progressbar(initialValue = 0.0) { }
                 separator(orientation = VERTICAL)

@@ -87,13 +87,13 @@ class FileChooserView : View() {
         prefHeight = 400.0
         vbox {
             spacing = 5.0
-            anchorpaneConstraints { leftAnchor = 5.0; rightAnchor = 5.0; topAnchor = 5.0; bottomAnchor = 5.0 }
+            allAnchors = 5.0
 
             label("Directory to scan: ")
             hbox {
                 spacing = 5.0
                 textfield {
-                    hboxConstraints { hGrow = ALWAYS }
+                    hgrow = ALWAYS
                     bind(property = dirToScanModel.path, converter = PathConverter())
                     validator {
                         when {
@@ -114,7 +114,7 @@ class FileChooserView : View() {
             scrollpane {
                 isFitToHeight = true
                 isFitToWidth = true
-                vboxConstraints { vGrow = ALWAYS }
+                vgrow = ALWAYS
                 listview(ctrl.files) {
                     bindSelected(fileToScanModel)
                 }.cellFormat {

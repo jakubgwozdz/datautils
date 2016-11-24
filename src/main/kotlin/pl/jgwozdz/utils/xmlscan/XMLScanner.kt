@@ -23,16 +23,54 @@ class XMLScanner(pathToXml: Path) : Closeable {
 
     //language=XPath2
     var allEntriesXPath = "*/Acct/CSRec/CSAcctNum"
+    //language=XPath2
+    var dataXPath = "./../../DflRec"
 
-    fun getAllEntries() : List<Element> {
+    fun getAllEntries(): List<Element> {
         val entriesExpression = xPathFactory.newXPath().compile(allEntriesXPath)
         val nodeList = entriesExpression.evaluate(inputSource, XPathConstants.NODESET) as NodeList
         return nodeListAsListOfElements(nodeList)
     }
 
-    fun nodeListAsListOfElements(details: NodeList) = (0..details.length - 1)
+    fun getData(entry: Element): ScannedData {
+        val mainEntryExpression = xPathFactory.newXPath().compile(dataXPath)
+
+        // Following steps could be done in one long line but I wouldn't understand it tomorrow
+
+        // find all records for entry
+        val recordsList = mainEntryExpression.evaluate(entry, XPathConstants.NODESET) as NodeList
+
+        // remap from NodeList to kotlin collections
+        val listOfListOfRecordsValues: List<List<Element>> = nodeListAsListOfElements(recordsList)
+                .map {
+                    nodeListAsListOfElements(it.childNodes) // take all data for each record
+                }
+
+        // remap to list of map<Tag, Value> (each map one record)
+        val listOfMaps: List<Map<String, String>> = listOfListOfRecordsValues.map {
+            it.associateBy({ it.tagName }, { it.textContent })
+        }
+
+        // remap to our model and return
+        return listOfMaps
+                .map {
+                    it.let(::ScannedSingleRow)
+                }
+                .let(::ScannedData)
+
+    }
+
+
+    fun nodeListAsListOfElements(details: NodeList): List<Element> = (0..details.length - 1)
             .map { details.item(it) }
-            .filter { it is Element }
-            .map { it as Element }
+            .filterIsInstance(Element::class.java)
+
+}
+
+data class ScannedData(val rows: List<ScannedSingleRow>) {
+
+}
+
+data class ScannedSingleRow(val values: Map<String, String>) {
 
 }

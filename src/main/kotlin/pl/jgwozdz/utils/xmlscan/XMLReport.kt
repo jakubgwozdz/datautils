@@ -147,7 +147,7 @@ open class XMLReporter(val pathToXml: Path) : Closeable {
 
         println(headers)
         println(ruler)
-        records.forEach { println(it) }
+        records.forEach(::println)
 
         println("all values same for specified tags: ${allValuesSame.map { "${it.key}='${it.value.pivotValue}'" }.joinToString("; ")}")
 
