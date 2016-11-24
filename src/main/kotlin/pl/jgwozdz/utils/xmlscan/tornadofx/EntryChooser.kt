@@ -1,8 +1,12 @@
 package pl.jgwozdz.utils.xmlscan.tornadofx
 
+import javafx.beans.property.Property
 import javafx.beans.property.SimpleListProperty
 import javafx.beans.property.SimpleObjectProperty
+import javafx.beans.value.ChangeListener
+import javafx.beans.value.ObservableValue
 import javafx.collections.FXCollections
+import javafx.collections.ObservableList
 import javafx.scene.layout.Priority
 import org.w3c.dom.Element
 import tornadofx.*
@@ -25,7 +29,7 @@ class EntryChooserView : View() {
                 listview(model.entries.value) {
                     bindSelected(model.selectedEntry)
                 }.cellFormat {
-                    text = it?.textContent
+                    text = it.textContent
                 }
             }
         }
@@ -50,10 +54,28 @@ class EntryChooserItemViewModel : ItemViewModel<EntryChooserModel>() {
 
 class EntryChooserViewModel() : ViewModel() {
 
-    var data = EntryChooserModel()
+    private val reportListener = Foo()
+
+    var data: EntryChooserModel = EntryChooserModel()
+    set(value) {
+        println("EntryChooserModel change")
+        entries.removeListener(reportListener)
+        field = value
+        entries.addListener(reportListener)
+
+    }
 
     val selectedEntry = bind(autocommit = true) { data.selectedEntryProperty }
 
-    val entries = bind { data.entriesProperty }
+    val entries: Property<ObservableList<Element>> = (bind(autocommit = true)  { data.entriesProperty }).apply {
+        addListener (reportListener)
+    }
+
+}
+
+class Foo : ChangeListener<ObservableList<Element>> {
+    override fun changed(observable: ObservableValue<out ObservableList<Element>>?, oldValue: ObservableList<Element>?, newValue: ObservableList<Element>?) {
+        println("EntryChooserViewModel changed from ${oldValue?.size} to ${newValue?.size}")
+    }
 
 }

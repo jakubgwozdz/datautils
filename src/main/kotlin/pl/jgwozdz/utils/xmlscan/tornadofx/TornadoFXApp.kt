@@ -17,8 +17,8 @@ import java.nio.file.Paths
 class TornadoFXApp : App(MainWindowView::class) {
 
     val fileChooserData = FileChooserModel(Paths.get("C:\\Users\\gwozd_000\\Downloads")).apply {
-        dirToScanProperty().addListener { observableValue, oldVal, newVal -> println("dirToScan changed from '$oldVal' to '$newVal'") }
-        selectedFileProperty().addListener { observableValue, oldVal, newVal -> println("selectedFile changed from '$oldVal' to '$newVal'") }
+        dirToScanProperty.addListener { observableValue, oldVal, newVal -> println("dirToScan changed from '$oldVal' to '$newVal'") }
+        selectedFileProperty.addListener { observableValue, oldVal, newVal -> println("selectedFile changed from '$oldVal' to '$newVal'") }
     }
 
     val entryChooserData = EntryChooserModel().apply {
@@ -34,10 +34,11 @@ class TornadoFXApp : App(MainWindowView::class) {
         find(EntryChooserView::class).model.rebind { data = entryChooserData }
         find(AnalysisView::class).fileChooserModel = fileChooserData
 
-        fileChooserData.selectedFileProperty().addListener { observableValue, oldPath, newPath ->
+        fileChooserData.selectedFileProperty.addListener { observableValue, oldPath, newPath ->
             xmlScanner?.close()
-            xmlScanner = XMLScanner(fileChooserData.dirToScan.resolve(newPath)).apply {
+            xmlScanner = newPath?.let(::XMLScanner)?.apply {
                 val allEntries = getAllEntries()
+                entryChooserData.entries.setAll(allEntries)
                 entryChooserData.entries.setAll(allEntries)
             }
         }

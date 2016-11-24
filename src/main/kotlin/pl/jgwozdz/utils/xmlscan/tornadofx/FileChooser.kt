@@ -1,7 +1,7 @@
 package pl.jgwozdz.utils.xmlscan.tornadofx
 
-import javafx.beans.property.ObjectProperty
 import javafx.beans.property.Property
+import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.value.ObservableValue
 import javafx.scene.control.Button
 import javafx.scene.layout.Priority.ALWAYS
@@ -56,7 +56,8 @@ class FileChooserView : View() {
                 vboxConstraints { vGrow = ALWAYS }
                 listview(model.files) {
                     bindSelected(property = model.selectedFile)
-//                    selectionModelProperty().onChange { model.commit() }
+                }.cellFormat {
+                    text = it.fileName.toString()
                 }
             }
         }
@@ -80,12 +81,17 @@ class FileChooserView : View() {
  */
 class FileChooserModel(dirToScan: Path) {
 
-    var dirToScan: Path by property(dirToScan)
-    fun dirToScanProperty(): ObjectProperty<Path> = getProperty(FileChooserModel::dirToScan)
+    val dirToScanProperty = SimpleObjectProperty<Path>(dirToScan)
+    var dirToScan: Path by dirToScanProperty
 
-    var selectedFile by property<Path>()
-    fun selectedFileProperty() = getProperty(FileChooserModel::selectedFile)
+//    var dirToScan: Path by property(dirToScan)
+//    fun dirToScanProperty(): ObjectProperty<Path> = getProperty(FileChooserModel::dirToScan)
 
+//    var selectedFile by property<Path>()
+//    fun selectedFileProperty() = getProperty(FileChooserModel::selectedFile)
+
+    val selectedFileProperty = SimpleObjectProperty<Path>()
+    var selectedFile: Path? by selectedFileProperty
 }
 
 
@@ -99,25 +105,22 @@ class FileChooserViewModel() : ViewModel() {
 
     var data = FileChooserModel(Paths.get(".").toAbsolutePath().normalize())
         set(value) {
-            val dirToScanPropertyOld = data.dirToScanProperty()
-            dirToScanPropertyOld.removeListener(updateFileListListener)
+            data.dirToScanProperty.removeListener(updateFileListListener)
             field = value
-            val dirToScanProperty = data.dirToScanProperty()
-            dirToScanProperty.addListener(updateFileListListener)
-            updateFileList(dirToScanProperty.get())
+            data.dirToScanProperty.addListener(updateFileListListener)
+            updateFileList(data.dirToScanProperty.get())
         }
 
-    val dirToScan: Property<Path> = bind { data.dirToScanProperty() }
+    val dirToScan: Property<Path> = bind { data.dirToScanProperty }
             .apply { onChange { commit() } }
 
-    val selectedFile = bind(autocommit = true) { data.selectedFileProperty() }
+    val selectedFile = bind(autocommit = true) { data.selectedFileProperty }
 
     val files = mutableListOf<Path>().observable()
 
     init {
-//        data.dirToScanProperty().addListener(updateFileListListener)
-//        updateFileList(data.dirToScanProperty().get())
-
+        data.dirToScanProperty.addListener(updateFileListListener)
+        updateFileList(data.dirToScanProperty.get())
     }
 
     internal fun updateFileList(newValue: Path?) {
@@ -125,7 +128,6 @@ class FileChooserViewModel() : ViewModel() {
         if (newValue == null) return
         try {
             Files.newDirectoryStream(newValue) { isXmlFile(it) }
-                    .map { newValue.relativize(it) }
                     .forEach { files.add(it) }
         } catch (e: Exception) {
             println("unreadable dir '$newValue': $e")
