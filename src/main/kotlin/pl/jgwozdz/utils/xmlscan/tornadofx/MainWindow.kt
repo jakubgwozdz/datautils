@@ -11,7 +11,9 @@ import javafx.scene.layout.Priority.ALWAYS
 import javafx.scene.text.TextAlignment.RIGHT
 import org.w3c.dom.Element
 import pl.jgwozdz.utils.version.VersionLogic
+import pl.jgwozdz.utils.xmlscan.AnalyzedData
 import pl.jgwozdz.utils.xmlscan.ScannedData
+import pl.jgwozdz.utils.xmlscan.ScannedDataAnalyzer
 import pl.jgwozdz.utils.xmlscan.XMLScanner
 import tornadofx.*
 import java.nio.file.Path
@@ -42,7 +44,7 @@ class MainWindowController : Controller() {
         selectedFile.addListener { observable, oldValue, newValue -> readFileAndCacheScanner(newValue, listToUpdate, xmlScanner) }
 
         val selectedEntry = entryChooserController.selectedEntry
-        val dataToUpdate = analyzedEntryController.scannedData
+        val dataToUpdate = analyzedEntryController.analyzedData
         selectedEntry.addListener { field, oldVal, newVal: Element? ->
             scanEntry(newVal, dataToUpdate, xmlScanner.value)
 
@@ -50,8 +52,9 @@ class MainWindowController : Controller() {
 
     }
 
-    private fun scanEntry(entry: Element?, dataToUpdate: SimpleObjectProperty<ScannedData>, xmlScanner: XMLScanner?) {
-        dataToUpdate.value = if (xmlScanner == null || entry == null) ScannedData(listOf()) else xmlScanner.getData(entry)
+    private fun scanEntry(entry: Element?, dataToUpdate: SimpleObjectProperty<AnalyzedData>, xmlScanner: XMLScanner?) {
+        val scannedData: ScannedData = if (xmlScanner == null || entry == null) ScannedData(listOf()) else xmlScanner.getData(entry)
+        dataToUpdate.value = ScannedDataAnalyzer().analyzeData(scannedData)
     }
 
     // TODO: runAsync but reliable

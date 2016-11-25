@@ -6,34 +6,41 @@ import javafx.beans.value.ObservableValue
 import javafx.collections.FXCollections
 import javafx.collections.ListChangeListener
 import javafx.collections.ObservableList
+import javafx.geometry.Pos
+import javafx.scene.control.SelectionMode
 import javafx.scene.control.TableColumn
 import javafx.scene.control.TableView
 import javafx.scene.layout.Priority
+import javafx.scene.paint.Color
 import javafx.util.Callback
-import pl.jgwozdz.utils.xmlscan.ScannedData
+import pl.jgwozdz.utils.xmlscan.AnalyzedData
 import pl.jgwozdz.utils.xmlscan.ScannedSingleRow
+import pl.jgwozdz.utils.xmlscan.TagStats
 import tornadofx.*
 
-class Record(row: ScannedSingleRow) {
-    val rowProperty = SimpleObjectProperty<ScannedSingleRow>(row)
-    var row by rowProperty
-}
-
+//class Record(row: ScannedSingleRow) {
+//    val rowProperty = SimpleObjectProperty<ScannedSingleRow>(row)
+//    var row by rowProperty
+//}
+//
 class AnalyzedEntryController : Controller() {
-    val rows: ObservableList<Record> = FXCollections.observableArrayList<Record>()
-    val scannedData = SimpleObjectProperty<ScannedData>()
+    val analyzedData = SimpleObjectProperty<AnalyzedData>()
+    internal val rows: ObservableList<ScannedSingleRow> = FXCollections.observableArrayList<ScannedSingleRow>()
+    internal val columns: ObservableList<TagStats> = FXCollections.observableArrayList<TagStats>()
 
     init {
         reportBlockEntry()
-        scannedData.addListener { observableValue, old, new ->
-            rows.setAll(new.rows.map(::Record)) }
+        analyzedData.addListener { observableValue, old, new ->
+            rows.setAll(new.scannedData.rows)
+            columns.setAll(new.tagsStats)
+        }
     }
 }
 
 class AnalyzedEntryView : View() {
 
     val ctrl: AnalyzedEntryController by inject()
-    var tableView: TableView<Record> by singleAssign()
+    var tableView: TableView<ScannedSingleRow> by singleAssign()
 
     override val root = anchorpane {
         vbox {
@@ -46,6 +53,7 @@ class AnalyzedEntryView : View() {
                 tableView = tableview(ctrl.rows) {
                     allAnchors = 5.0
                     isEditable = false
+                    selectionModel.selectionMode = SelectionMode.MULTIPLE
                 }
             }
         }
@@ -53,30 +61,33 @@ class AnalyzedEntryView : View() {
 
     init {
         reportBlockEntry()
-        ctrl.rows.addListener { change: ListChangeListener.Change<out Record> ->
+        ctrl.columns.addListener { change: ListChangeListener.Change<out TagStats> ->
             while (change.next()) {
                 if (change.wasRemoved() && !change.wasAdded()) {
                     tableView.columns.clear()
                 }
                 if (change.wasAdded()) {
-                    change.addedSubList.firstOrNull()?.let {
-                        val newColumns = mutableListOf<TableColumn<Record, String?>>()
-                        it.row.values.forEach { tag ->
-                            newColumns += TableColumn<Record, String?>(tag.key).apply {
-                                cellValueFactory = Callback<TableColumn.CellDataFeatures<Record, String?>, ObservableValue<String?>> { features ->
-                                    ReadOnlyStringWrapper(features.value.row.values[tag.key]).readOnlyProperty
+                    val newColumns: List<TableColumn<ScannedSingleRow, String?>> = change.addedSubList
+                            .filter { !it.allEntriesEqual }
+                            .map { tagStats ->
+                                TableColumn<ScannedSingleRow, String?>(tagStats.tagName).apply {
+
+                                    // TODO: test with MapValueFactory
+                                    cellValueFactory = Callback<TableColumn.CellDataFeatures<ScannedSingleRow, String?>, ObservableValue<String?>> { features ->
+                                        ReadOnlyStringWrapper(features.value.values[tagStats.tagName]).readOnlyProperty
+                                    }
+                                    isSortable = false
+                                    cellFormat {
+                                        text = it
+                                        textFill = if (it == tagStats.pivotValue) Color.LIGHTSLATEGREY.brighter().brighter() else Color.BLACK
+                                        alignment = if (tagStats.numbersOnly) Pos.CENTER_RIGHT else Pos.CENTER_LEFT
+                                    }
                                 }
-                                isSortable = false
                             }
-
-
-                        }
-                        tableView.columns.setAll(newColumns)
-                    }
+                    tableView.columns.setAll(newColumns)
                 }
             }
         }
     }
-
 }
 

@@ -8,7 +8,6 @@ import java.io.Closeable
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.*
 import javax.xml.xpath.XPathConstants
 import javax.xml.xpath.XPathExpression
 import javax.xml.xpath.XPathFactory
@@ -103,10 +102,10 @@ open class XMLReporter(val pathToXml: Path) : Closeable {
 
         // todo: for sure it can be done better with kotlin classes
 
-        val distinctTags: Map<String, TagStats> = parsedDetails
+        val distinctTags: Map<String, TagStatsBuilder> = parsedDetails
                 .flatMap { it.keys }
                 .distinct()
-                .map { it to TagStats(it) }
+                .map { it to TagStatsBuilder(it) }
                 .toMap()
 
         parsedDetails
@@ -114,10 +113,10 @@ open class XMLReporter(val pathToXml: Path) : Closeable {
                 .forEach {
                     val tagName = it.key
                     val value = it.value
-                    distinctTags[tagName]?.update(value)
+                    distinctTags[tagName]?.append(value)
                 }
 
-        distinctTags.forEach { it.value.finish(parsedDetails.size) }
+        distinctTags.forEach { it.value.build(parsedDetails.size) }
 
         val allValuesSame = distinctTags.filterValues { it.allEntriesEqual }
 
@@ -160,40 +159,3 @@ open class XMLReporter(val pathToXml: Path) : Closeable {
     }
 }
 
-class TagStats(val tagName: String) {
-
-    val existingValues = HashMap<String, Int>()
-    var pivotValue: String? = null
-    var allEntriesEqual = false
-    var maxLength = tagName.length
-    var numbersOnly = false
-
-    fun update(value: String) {
-        existingValues[value] = (existingValues[value] ?: 0) + 1
-//        pivotValue = pivotValue ?: value
-        if (maxLength < value.length) maxLength = value.length
-    }
-
-    fun finish(totalEntries: Int) {
-        val entriesForTag = existingValues.values.sum()
-        allEntriesEqual = (existingValues.size == 1 && entriesForTag == totalEntries)
-        numbersOnly = existingValues.all { it.key.trim().matches(Regex("^-?\\d*\\.?\\d*$")) }
-        if (maxLength > 35) maxLength = 35
-        if (maxLength < tagName.length) maxLength = tagName.length
-
-        val blanks = existingValues.keys.filter { it.isBlank() }
-        val mostOften = existingValues.maxBy { it.value }?.key
-        val mostOftenNumber = existingValues.filterKeys { it.all { it == '0' || it == '.' } }.maxBy { it.value }?.key
-
-        pivotValue = when {
-            allEntriesEqual -> mostOften
-            entriesForTag < totalEntries -> null
-            blanks.size == 1 -> blanks[0]
-            mostOften?.all { it == '0' || it == '.' } ?: false -> mostOften
-            mostOftenNumber != null && numbersOnly -> mostOftenNumber
-            else -> null
-        }
-
-
-    }
-}
