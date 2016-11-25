@@ -31,8 +31,8 @@ class AnalyzedEntryController : Controller() {
     init {
         reportBlockEntry()
         analyzedData.addListener { observableValue, old, new ->
-            rows.setAll(new.scannedData.rows)
             columns.setAll(new.tagsStats)
+            rows.setAll(new.scannedData.rows)
         }
     }
 }
@@ -53,6 +53,8 @@ class AnalyzedEntryView : View() {
                 tableView = tableview(ctrl.rows) {
                     allAnchors = 5.0
                     isEditable = false
+
+                    selectionModel.isCellSelectionEnabled = true
                     selectionModel.selectionMode = SelectionMode.MULTIPLE
                 }
             }
@@ -74,12 +76,12 @@ class AnalyzedEntryView : View() {
 
                                     // TODO: test with MapValueFactory
                                     cellValueFactory = Callback<TableColumn.CellDataFeatures<ScannedSingleRow, String?>, ObservableValue<String?>> { features ->
-                                        ReadOnlyStringWrapper(features.value.values[tagStats.tagName]).readOnlyProperty
+                                        ReadOnlyStringWrapper(features.value.values[tagStats.tagName]?:"<null>").readOnlyProperty
                                     }
                                     isSortable = false
                                     cellFormat {
                                         text = it
-                                        textFill = if (it == tagStats.pivotValue) Color.LIGHTSLATEGREY.brighter().brighter() else Color.BLACK
+                                        textFill = if (it == tagStats.pivotValue || (tagStats.pivotValue == null && it == "<null>")) Color.LIGHTSLATEGREY.brighter().brighter() else Color.BLACK
                                         alignment = if (tagStats.numbersOnly) Pos.CENTER_RIGHT else Pos.CENTER_LEFT
                                     }
                                 }

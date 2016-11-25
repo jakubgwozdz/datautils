@@ -14,7 +14,7 @@ import javax.xml.xpath.XPathFactory
  */
 class XMLScanner(pathToXml: Path,
         //language=XPath2
-                 var allEntriesXPath: String = "*/Acct/CSRec/CSAcctNum"
+                 var allEntriesXPath: String = "//Acct/CSRec/CSAcctNum"
 ) : Closeable {
 
     private val inputStream = Files.newInputStream(pathToXml)

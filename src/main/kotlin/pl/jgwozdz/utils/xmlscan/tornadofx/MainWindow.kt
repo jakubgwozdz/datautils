@@ -17,6 +17,8 @@ import pl.jgwozdz.utils.xmlscan.ScannedDataAnalyzer
 import pl.jgwozdz.utils.xmlscan.XMLScanner
 import tornadofx.*
 import java.nio.file.Path
+import java.time.Duration
+import java.time.Instant
 
 /**
  *
@@ -62,6 +64,8 @@ class MainWindowController : Controller() {
 //        println("readFileAndCacheScanner called")
 //        runAsync {
 //            println("readFileAndCacheScanner async start")
+        val start = Instant.now()
+        println("scanning $path")
         xmlScanner.value?.close()
         xmlScanner.value = path?.let { XMLScanner(it) }
         val result = xmlScanner.value?.run { getAllEntries() } ?: listOf()
@@ -73,6 +77,8 @@ class MainWindowController : Controller() {
 //            println("readFileAndCacheScanner ui end")
 //        }
 //        println("readFileAndCacheScanner ended")
+        val end = Instant.now()
+        println("found ${result.size} entries after ${Duration.between(start,end)}")
     }
 
 }
