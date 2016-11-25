@@ -4,14 +4,14 @@
 
     <groupId>pl.jgwozdz.utils</groupId>
     <artifactId>xmlscan</artifactId>
-    <version>0.1.2</version>
+    <version>0.1.3-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <scm>
         <url>https://github.com/jakubgwozdz/datautils.git</url>
         <connection>scm:git:https://github.com/jakubgwozdz/datautils.git</connection>
         <developerConnection>scm:git:https://github.com/jakubgwozdz/datautils.git</developerConnection>
-      <tag>v0.1.2</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <properties>
