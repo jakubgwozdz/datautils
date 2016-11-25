@@ -12,7 +12,7 @@
     <scm>
         <url>https://github.com/jakubgwozdz/datautils.git</url>
         <connection>scm:git:git://github.com/jakubgwozdz/datautils.git</connection>
-        <developerConnection>scm:git:git@jakubgwozdz:jakubgwozdz/datautils.git</developerConnection>
+        <developerConnection>scm:git:git://github.com/jakubgwozdz/datautils.git</developerConnection>
     </scm>
 
     <properties>
