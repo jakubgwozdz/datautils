@@ -70,18 +70,22 @@ class AnalyzedEntryView : View() {
                 }
                 if (change.wasAdded()) {
                     val newColumns: List<TableColumn<ScannedSingleRow, String?>> = change.addedSubList
-                            .filter { !it.allEntriesEqual }
+                            .filter { !it.allEntriesEqual || it.occurrencesForTag == 1 }
                             .map { tagStats ->
                                 TableColumn<ScannedSingleRow, String?>(tagStats.tagName).apply {
 
                                     // TODO: test with MapValueFactory
                                     cellValueFactory = Callback<TableColumn.CellDataFeatures<ScannedSingleRow, String?>, ObservableValue<String?>> { features ->
-                                        ReadOnlyStringWrapper(features.value.values[tagStats.tagName]?:"<null>").readOnlyProperty
+                                        ReadOnlyStringWrapper(features.value.values[tagStats.tagName] ?: "<null>").readOnlyProperty
                                     }
                                     isSortable = false
                                     cellFormat {
                                         text = it
-                                        textFill = if (it == tagStats.pivotValue || (tagStats.pivotValue == null && it == "<null>")) Color.LIGHTSLATEGREY.brighter().brighter() else Color.BLACK
+                                        textFill = when {
+                                            it == tagStats.pivotValue && tagStats.occurrencesForTag != 1 -> Color.LIGHTSLATEGREY.brighter()
+                                            tagStats.pivotValue == null && it == "<null>" -> Color.LIGHTSLATEGREY.brighter().brighter()
+                                            else -> Color.BLACK
+                                        }
                                         alignment = if (tagStats.numbersOnly) Pos.CENTER_RIGHT else Pos.CENTER_LEFT
                                     }
                                 }

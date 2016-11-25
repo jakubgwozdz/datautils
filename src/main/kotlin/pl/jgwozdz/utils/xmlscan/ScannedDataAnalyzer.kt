@@ -8,7 +8,7 @@ import java.util.*
 
 class ScannedDataAnalyzer {
 
-    fun analyzeData (scannedData: ScannedData): AnalyzedData {
+    fun analyzeData(scannedData: ScannedData): AnalyzedData {
 
         // find all distinct tags and create statistics builders for them
         val distinctTags = scannedData.rows
@@ -42,14 +42,14 @@ internal class TagStatsBuilder(val tagName: String) {
     var maxLength = tagName.length
     var numbersOnly = false
 
-    fun append(value: String) : TagStatsBuilder {
+    fun append(value: String): TagStatsBuilder {
         existingValues[value] = (existingValues[value] ?: 0) + 1
 //        pivotValue = pivotValue ?: value
         if (maxLength < value.length) maxLength = value.length
         return this
     }
 
-    fun build(totalRows: Int) : TagStats {
+    fun build(totalRows: Int): TagStats {
         val occurrencesForTag = existingValues.values.sum()
         allEntriesEqual = (existingValues.size == 1 && occurrencesForTag == totalRows)
         numbersOnly = existingValues.all { it.key.trim().matches(Regex("^-?\\d*\\.?\\d*$")) }
@@ -68,11 +68,15 @@ internal class TagStatsBuilder(val tagName: String) {
             mostOftenNumber != null && numbersOnly -> mostOftenNumber
             else -> null
         }
-        return TagStats(tagName, pivotValue, allEntriesEqual, maxLength, numbersOnly)
+        return TagStats(tagName, pivotValue, allEntriesEqual, maxLength, numbersOnly, occurrencesForTag)
 
     }
 }
 
-data class TagStats(val tagName: String, val pivotValue: String?, val allEntriesEqual: Boolean = false, val maxLength: Int, val numbersOnly : Boolean)
+data class TagStats(val tagName: String,
+                    val pivotValue: String?, val allEntriesEqual: Boolean = false,
+                    val maxLength: Int,
+                    val numbersOnly: Boolean,
+                    val occurrencesForTag: Int)
 
 data class AnalyzedData(val scannedData: ScannedData, val tagsStats: List<TagStats>)

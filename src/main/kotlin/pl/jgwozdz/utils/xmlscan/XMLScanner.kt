@@ -12,10 +12,7 @@ import javax.xml.xpath.XPathFactory
 /**
  *
  */
-class XMLScanner(pathToXml: Path,
-        //language=XPath2
-                 var allEntriesXPath: String = "//Acct/CSRec/CSAcctNum"
-) : Closeable {
+class XMLScanner(pathToXml: Path, var allEntriesXPath: String, var dataXPath: String) : Closeable {
 
     private val inputStream = Files.newInputStream(pathToXml)
     private val inputSource = InputSource(inputStream)
@@ -27,8 +24,6 @@ class XMLScanner(pathToXml: Path,
 
     // todo: externalize defaults to property file
     // todo: make it configurable,
-    //language=XPath2
-    var dataXPath = "./../../DflRec"
 
     fun getAllEntries(): List<Element> {
         val entriesExpression = xPathFactory.newXPath().compile(allEntriesXPath)

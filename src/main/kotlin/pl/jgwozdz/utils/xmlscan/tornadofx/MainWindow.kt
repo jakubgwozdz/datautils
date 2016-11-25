@@ -24,6 +24,8 @@ import java.time.Instant
  *
  */
 
+
+
 class MainWindowController : Controller() {
 
     val version = SimpleStringProperty()
@@ -35,6 +37,7 @@ class MainWindowController : Controller() {
     private val entryChooserController: EntryChooserController by inject()
     private val fileChooserController: FileChooserController by inject()
     private val analyzedEntryController: AnalyzedEntryController by inject()
+    private val appPropertiesWrapperModel: AppPropertiesWrapperModel by inject()
 
     init {
         reportBlockEntry()
@@ -67,7 +70,8 @@ class MainWindowController : Controller() {
         val start = Instant.now()
         println("scanning $path")
         xmlScanner.value?.close()
-        xmlScanner.value = path?.let { XMLScanner(it) }
+        val xmlScanConfig = appPropertiesWrapperModel.appConfig.value.xmlScanConfig
+        xmlScanner.value = path?.let { XMLScanner(it, xmlScanConfig.entryNameXPath, xmlScanConfig.entryDataFromNameXPath) }
         val result = xmlScanner.value?.run { getAllEntries() } ?: listOf()
 //            println("readFileAndCacheScanner async end")
 //            result
