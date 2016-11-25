@@ -1,8 +1,10 @@
 package pl.jgwozdz.utils.xmlscan.tornadofx
 
+import org.w3c.dom.Element
 import pl.jgwozdz.utils.xmlscan.ScannedData
 import pl.jgwozdz.utils.xmlscan.XMLScanner
 import tornadofx.App
+import java.nio.file.Path
 import java.nio.file.Paths
 
 /**
@@ -14,29 +16,27 @@ class TornadoFXApp : App(MainWindowView::class) {
 
     var xmlScanner: XMLScanner? = null
 
-    val fileToScanModel: FileToScanModel by inject()
-    val entryToAnalyzeModel: EntryToAnalyzeModel by inject()
+//    val entryToAnalyzeModel: EntryToAnalyzeModel by inject()
     val entryChooserController: EntryChooserController by inject()
     val fileChooserController: FileChooserController by inject()
-    val analyzedEntryController:AnalyzedEntryController by inject()
+    val analyzedEntryController: AnalyzedEntryController by inject()
 
     init {
 
         // actual logic
 
-        fileToScanModel.itemProperty.addListener { field, oldVal, newVal: FileToScan? ->
+        fileChooserController.selectedFile.addListener { field, oldVal, newVal: Path? ->
             xmlScanner?.close()
-            xmlScanner = newVal?.path?.let { XMLScanner(it) }
+            xmlScanner = newVal?.let { XMLScanner(it) }
             xmlScanner?.run {
-                val allEntries = getAllEntries().map(::EntryToAnalyze)
+                val allEntries = getAllEntries()
                 entryChooserController.entries.setAll(allEntries)
             }
         }
 
-        entryToAnalyzeModel.itemProperty.addListener { field, oldVal, newVal: EntryToAnalyze? ->
+        entryChooserController.selectedEntry.addListener { field, oldVal, newVal: Element? ->
             xmlScanner?.run {
-                val scannedData = newVal?.entry?.let { getData(it) } ?: ScannedData(listOf())
-//                scannedData.rows.forEach(::println)
+                val scannedData = newVal?.let { getData(it) } ?: ScannedData(listOf())
                 analyzedEntryController.scannedData.value = scannedData
             }
 

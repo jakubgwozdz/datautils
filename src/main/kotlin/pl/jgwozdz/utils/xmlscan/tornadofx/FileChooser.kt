@@ -16,15 +16,12 @@ class DirectoryToScan(path: Path) {
     var path by pathProperty
 }
 
-class FileToScan(path: Path) {
-    val pathProperty = SimpleObjectProperty<Path>(path)
-    var path by pathProperty
-}
-
 
 class FileChooserController : Controller() {
+
     val directoryToScan = DirectoryToScan(Paths.get(".").toAbsolutePath().normalize())
-    val files: ObservableList<FileToScan> = FXCollections.observableArrayList<FileToScan>()
+    val files: ObservableList<Path> = FXCollections.observableArrayList<Path>()
+    val selectedFile = SimpleObjectProperty<Path>()
 
     fun onSelectDirectoryButton(window: Window?) {
         DirectoryChooser()         // create dialog
@@ -52,7 +49,7 @@ class FileChooserController : Controller() {
         try {
             Files.newDirectoryStream(directoryToScan.path) { isXmlFile(it) }
                     .forEach {
-                        files.add(FileToScan(it))
+                        files.add(it)
                     }
         } catch (e: Exception) {
             println("unreadable dir '$directoryToScan.path': $e")
@@ -69,16 +66,11 @@ class DirectoryToScanModel : ItemViewModel<DirectoryToScan>() {
             .apply { onChange { commit() } }
 }
 
-class FileToScanModel : ItemViewModel<FileToScan>() {
-    val path = bind { item?.pathProperty }
-}
-
 class FileChooserView : View() {
 
     val ctrl: FileChooserController by inject()
 
     val dirToScanModel: DirectoryToScanModel by inject()
-    val fileToScanModel: FileToScanModel by inject()
 
     override val root = anchorpane {
         title = "File Chooser"
@@ -116,9 +108,9 @@ class FileChooserView : View() {
                 isFitToWidth = true
                 vgrow = ALWAYS
                 listview(ctrl.files) {
-                    bindSelected(fileToScanModel)
+                    bindSelected(ctrl.selectedFile)
                 }.cellFormat {
-                    text = it.path?.fileName?.toString()
+                    text = it.fileName.toString()
                 }
             }
         }

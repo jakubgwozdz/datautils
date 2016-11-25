@@ -7,19 +7,12 @@ import javafx.scene.layout.Priority
 import org.w3c.dom.Element
 import tornadofx.*
 
-class EntryToAnalyze(entry:Element) {
-    val entryProperty = SimpleObjectProperty<Element>(entry)
-    var entry by entryProperty
-}
 
 class EntryChooserController : Controller() {
 
-    val entries: ObservableList<EntryToAnalyze> = FXCollections.observableArrayList<EntryToAnalyze>()
+    val entries: ObservableList<Element> = FXCollections.observableArrayList<Element>()
+    val selectedEntry = SimpleObjectProperty<Element>()
 
-}
-
-class EntryToAnalyzeModel : ItemViewModel<EntryToAnalyze>() {
-    val entry = bind { item?.entryProperty }
 }
 
 
@@ -27,8 +20,6 @@ class EntryToAnalyzeModel : ItemViewModel<EntryToAnalyze>() {
 class EntryChooserView : View() {
 
     val ctrl : EntryChooserController by inject()
-    val entryToAnalyzeModel : EntryToAnalyzeModel by inject()
-//    val model = EntryChooserViewModel()
 
     override val root = anchorpane {
         prefWidth = 200.0
@@ -41,9 +32,9 @@ class EntryChooserView : View() {
                 isFitToWidth = true
                 vgrow = Priority.ALWAYS
                 listview(ctrl.entries) {
-                    bindSelected(entryToAnalyzeModel)
+                    bindSelected(ctrl.selectedEntry)
                 }.cellFormat {
-                    text = it.entry?.textContent
+                    text = it.textContent
                 }
             }
         }
