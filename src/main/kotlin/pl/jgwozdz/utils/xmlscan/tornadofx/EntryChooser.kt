@@ -13,6 +13,10 @@ class EntryChooserController : Controller() {
     val entries: ObservableList<Element> = FXCollections.observableArrayList<Element>()
     val selectedEntry = SimpleObjectProperty<Element>()
 
+    init {
+        reportBlockEntry()
+    }
+
 }
 
 
@@ -39,6 +43,10 @@ class EntryChooserView : View() {
             }
         }
 
+    }
+
+    init {
+        reportBlockEntry()
     }
 
 }

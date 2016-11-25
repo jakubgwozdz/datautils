@@ -24,6 +24,7 @@ class AnalyzedEntryController : Controller() {
     val scannedData = SimpleObjectProperty<ScannedData>()
 
     init {
+        reportBlockEntry()
         scannedData.addListener { observableValue, old, new ->
             rows.setAll(new.rows.map(::Record)) }
     }
@@ -51,6 +52,7 @@ class AnalyzedEntryView : View() {
     }
 
     init {
+        reportBlockEntry()
         ctrl.rows.addListener { change: ListChangeListener.Change<out Record> ->
             while (change.next()) {
                 if (change.wasRemoved() && !change.wasAdded()) {

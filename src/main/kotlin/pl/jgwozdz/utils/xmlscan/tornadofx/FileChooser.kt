@@ -36,6 +36,7 @@ class FileChooserController : Controller() {
     }
 
     init {
+        reportBlockEntry()
         directoryToScan.pathProperty.addListener { observable, oldValue, newValue ->
             println("dirToScan changed from $oldValue to $newValue ")
             updateFileList()
@@ -43,7 +44,7 @@ class FileChooserController : Controller() {
         updateFileList()
     }
 
-    internal fun updateFileList() {
+    fun updateFileList() {
         files.clear()
         if (directoryToScan.path == null) return
         try {
@@ -94,7 +95,7 @@ class FileChooserView : View() {
                             else -> null
                         }
                     }
-                    setOnAction { dirToScanModel.commit() }
+                    setOnAction { ctrl.updateFileList() }
                 }
                 button("...") {
                     setOnAction {
@@ -117,6 +118,7 @@ class FileChooserView : View() {
     }
 
     init {
+        reportBlockEntry()
         dirToScanModel.rebind { item = ctrl.directoryToScan }
     }
 
