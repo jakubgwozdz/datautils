@@ -10,18 +10,27 @@ import java.util.*
  *
  */
 
-data class AppConfig(var xmlScanConfig: XMLScanConfig)
+data class AppConfig(var xmlScanConfig: XMLScanConfig, var initialConfig : InitialConfig)
 
+data class InitialConfig(var directory: String)
 data class XMLScanConfig(var entryNameXPath: String, var entryDataFromNameXPath: String)
 
-val ENTRY_NAME_XPATH = "xmlscan.entryname.xpath"
-val ENTRY_DATA_FROM_NAME_XPATH = "xmlscan.entrydatafromname.xpath"
+
+
+
+
+
+
+internal val ENTRY_NAME_XPATH = "xmlscan.entryname.xpath"
+internal val ENTRY_DATA_FROM_NAME_XPATH = "xmlscan.entrydatafromname.xpath"
+internal val INITIAL_DIRECTORY = "initial.directory.path"
 
 class PropertiesFile(val path: Path = Paths.get("xmlscan.properties")) {
 
-    val defaults = Properties().apply {
+    private val defaults = Properties().apply {
         this[ENTRY_NAME_XPATH] = "//Entry/Name"
         this[ENTRY_DATA_FROM_NAME_XPATH] = "./../Records/Record"
+        this[INITIAL_DIRECTORY] = "."
     }
 
     fun readConfig(): AppConfig {
@@ -34,17 +43,21 @@ class PropertiesFile(val path: Path = Paths.get("xmlscan.properties")) {
                 println("Cannot read '$path': $e")
             }
         }
+
         val entryNameXPath = properties.getProperty(ENTRY_NAME_XPATH)
         val entryDataFromNameXPath = properties.getProperty(ENTRY_DATA_FROM_NAME_XPATH)
-        val xmlScanProperties = XMLScanConfig(entryNameXPath, entryDataFromNameXPath)
+        val initialDirectory = properties.getProperty(INITIAL_DIRECTORY)
 
-        return AppConfig(xmlScanProperties)
+        val xmlScanProperties = XMLScanConfig(entryNameXPath, entryDataFromNameXPath)
+        val initialConfig = InitialConfig(initialDirectory)
+        return AppConfig(xmlScanProperties, initialConfig)
     }
 
     fun writeConfig(appConfig: AppConfig) {
         val properties = Properties(defaults)
         properties.setProperty(ENTRY_NAME_XPATH, appConfig.xmlScanConfig.entryNameXPath)
         properties.setProperty(ENTRY_DATA_FROM_NAME_XPATH, appConfig.xmlScanConfig.entryDataFromNameXPath)
+        properties.setProperty(INITIAL_DIRECTORY, appConfig.initialConfig.directory)
         try {
             Files.newOutputStream(path).use {
                 properties.store(it, "XML Scanner data")

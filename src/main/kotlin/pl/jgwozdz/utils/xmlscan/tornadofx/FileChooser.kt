@@ -19,6 +19,7 @@ class DirectoryToScan(path: Path) {
 
 class FileChooserController : Controller() {
 
+    private val appPropertiesWrapperModel: AppPropertiesWrapperModel by inject()
     val directoryToScan = DirectoryToScan(Paths.get(".").toAbsolutePath().normalize())
     val files: ObservableList<Path> = FXCollections.observableArrayList<Path>()
     val selectedFile = SimpleObjectProperty<Path>()
@@ -37,10 +38,13 @@ class FileChooserController : Controller() {
 
     init {
         reportBlockEntry()
+        val initialConfig = appPropertiesWrapperModel.appConfig.value.initialConfig
         directoryToScan.pathProperty.addListener { observable, oldValue, newValue ->
             println("dirToScan changed from $oldValue to $newValue ")
+            initialConfig.directory = newValue.toString()
             updateFileList()
         }
+        directoryToScan.path = Paths.get(initialConfig.directory).toAbsolutePath().normalize()
         updateFileList()
     }
 

@@ -56,6 +56,7 @@ class AnalyzedEntryView : View() {
 
                     selectionModel.isCellSelectionEnabled = true
                     selectionModel.selectionMode = SelectionMode.MULTIPLE
+
                 }
             }
         }
@@ -63,6 +64,7 @@ class AnalyzedEntryView : View() {
 
     init {
         reportBlockEntry()
+
         ctrl.columns.addListener { change: ListChangeListener.Change<out TagStats> ->
             while (change.next()) {
                 if (change.wasRemoved() && !change.wasAdded()) {
@@ -71,27 +73,28 @@ class AnalyzedEntryView : View() {
                 if (change.wasAdded()) {
                     val newColumns: List<TableColumn<ScannedSingleRow, String?>> = change.addedSubList
                             .filter { !it.allEntriesEqual || it.occurrencesForTag == 1 }
-                            .map { tagStats ->
-                                TableColumn<ScannedSingleRow, String?>(tagStats.tagName).apply {
-
-                                    // TODO: test with MapValueFactory
-                                    cellValueFactory = Callback<TableColumn.CellDataFeatures<ScannedSingleRow, String?>, ObservableValue<String?>> { features ->
-                                        ReadOnlyStringWrapper(features.value.values[tagStats.tagName] ?: "<null>").readOnlyProperty
-                                    }
-                                    isSortable = false
-                                    cellFormat {
-                                        text = it
-                                        textFill = when {
-                                            it == tagStats.pivotValue && tagStats.occurrencesForTag != 1 -> Color.LIGHTSLATEGREY.brighter()
-                                            tagStats.pivotValue == null && it == "<null>" -> Color.LIGHTSLATEGREY.brighter().brighter()
-                                            else -> Color.BLACK
-                                        }
-                                        alignment = if (tagStats.numbersOnly) Pos.CENTER_RIGHT else Pos.CENTER_LEFT
-                                    }
-                                }
-                            }
+                            .map { tagStats -> createTableColumn(tagStats) }
                     tableView.columns.setAll(newColumns)
                 }
+            }
+        }
+    }
+
+    private fun createTableColumn(tagStats: TagStats): TableColumn<ScannedSingleRow, String?> {
+        return TableColumn<ScannedSingleRow, String?>(tagStats.tagName).apply {
+
+            cellValueFactory = Callback<TableColumn.CellDataFeatures<ScannedSingleRow, String?>, ObservableValue<String?>> { features ->
+                ReadOnlyStringWrapper(features.value.values[tagStats.tagName] ?: "<null>").readOnlyProperty
+            }
+            isSortable = false
+            cellFormat {
+                text = it
+                textFill = when {
+                    it == tagStats.pivotValue && tagStats.occurrencesForTag != 1 -> Color.LIGHTSLATEGREY.brighter()
+                    tagStats.pivotValue == null && it == "<null>" -> Color.LIGHTSLATEGREY.brighter().brighter()
+                    else -> Color.BLACK
+                }
+                alignment = if (tagStats.numbersOnly) Pos.CENTER_RIGHT else Pos.CENTER_LEFT
             }
         }
     }

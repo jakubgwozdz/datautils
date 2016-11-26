@@ -23,10 +23,9 @@ class AppPropertiesWrapperModel : ItemViewModel<AppConfigWrapper>() {
 
 class TornadoFXApp : App(MainWindowView::class) {
 
-    private val fileChooserController: FileChooserController by inject()
     private val appPropertiesWrapperModel: AppPropertiesWrapperModel by inject()
 
-    val propertiesFile = SimpleObjectProperty<PropertiesFile>()
+    private val propertiesFile = SimpleObjectProperty<PropertiesFile>()
 
     private fun configFromParams(parameters: Parameters?): String {
         return parameters?.raw
@@ -42,7 +41,6 @@ class TornadoFXApp : App(MainWindowView::class) {
         val properties = propertiesFile.value.readConfig()
         appPropertiesWrapperModel.appConfig.value = properties
 
-        fileChooserController.directoryToScan.path = Paths.get("C:\\Users\\gwozd_000\\Downloads")
         super.start(stage)
     }
 
