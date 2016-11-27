@@ -1,5 +1,6 @@
 package pl.jgwozdz.utils.xmlscan.tornadofx
 
+import javafx.application.Platform
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.beans.value.WritableValue
@@ -49,17 +50,25 @@ class MainWindowController : Controller() {
         version.value = VersionLogic().title(name = "XML Scanner", artifactId = "xmlscan")
 
         // wiring the models
-        val selectedFile = fileChooserController.selectedFile
-        val listToUpdate = entryChooserController.entries
-        selectedFile.addListener { observable, oldValue, newValue -> readFileAndCacheScanner(newValue, listToUpdate, xmlScanner) }
+        fileChooserController.selectedFile.addListener { observable, oldValue, newValue -> reScanFile() }
+//        appPropertiesWrapperModel.item.configProperty.addListener { observable, oldValue, newValue -> reScanFile() }
 
         val selectedEntry = entryChooserController.selectedEntry
         val dataToUpdate = analyzedEntryController.analyzedData
         selectedEntry.addListener { field, oldVal, newVal: Element? ->
             scanEntry(newVal, dataToUpdate, xmlScanner.value)
-
         }
 
+
+    }
+
+    fun reScanFile() {
+        reportBlockEntry()
+        Platform.runLater {
+            val selectedFile = fileChooserController.selectedFile
+            val listToUpdate = entryChooserController.entries
+            readFileAndCacheScanner(selectedFile.value, listToUpdate, xmlScanner)
+        }
     }
 
     private fun scanEntry(entry: Element?, dataToUpdate: SimpleObjectProperty<AnalyzedData>, xmlScanner: XMLScanner?) {
@@ -132,7 +141,11 @@ class MainWindowController : Controller() {
 
         }
 
-        val result: Optional<AppConfig>? = dialog.showAndWait()
+        val result: Optional<AppConfig> = dialog.showAndWait()
+        if (result.isPresent) {
+            appPropertiesWrapperModel.appConfig.value = result.get()
+            appPropertiesWrapperModel.commit { reScanFile() }
+        }
 
     }
 
