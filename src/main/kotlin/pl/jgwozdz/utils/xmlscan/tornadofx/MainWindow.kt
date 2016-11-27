@@ -4,26 +4,30 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.beans.value.WritableValue
 import javafx.collections.ObservableList
+import javafx.event.ActionEvent
 import javafx.geometry.Insets
 import javafx.geometry.Orientation.VERTICAL
 import javafx.geometry.Pos.TOP_RIGHT
+import javafx.scene.control.ButtonBar.ButtonData.OK_DONE
+import javafx.scene.control.ButtonType
+import javafx.scene.control.Dialog
 import javafx.scene.layout.Priority.ALWAYS
 import javafx.scene.text.TextAlignment.RIGHT
+import org.controlsfx.glyphfont.FontAwesome.Glyph.*
+import org.controlsfx.glyphfont.GlyphFont
+import org.controlsfx.glyphfont.GlyphFontRegistry
 import org.w3c.dom.Element
 import pl.jgwozdz.utils.version.VersionLogic
-import pl.jgwozdz.utils.xmlscan.AnalyzedData
-import pl.jgwozdz.utils.xmlscan.ScannedData
-import pl.jgwozdz.utils.xmlscan.ScannedDataAnalyzer
-import pl.jgwozdz.utils.xmlscan.XMLScanner
+import pl.jgwozdz.utils.xmlscan.*
 import tornadofx.*
 import java.nio.file.Path
 import java.time.Duration
 import java.time.Instant
+import java.util.*
 
 /**
  *
  */
-
 
 
 class MainWindowController : Controller() {
@@ -82,7 +86,53 @@ class MainWindowController : Controller() {
 //        }
 //        println("readFileAndCacheScanner ended")
         val end = Instant.now()
-        println("found ${result.size} entries after ${Duration.between(start,end)}")
+        println("found ${result.size} entries after ${Duration.between(start, end)}")
+    }
+
+    val fontAwesome: GlyphFont? = GlyphFontRegistry.font("FontAwesome")
+
+    fun onConfigurationButton(event: ActionEvent?) {
+
+        val appConfig = appPropertiesWrapperModel.appConfig.value
+        val xmlScanConfig = appConfig.xmlScanConfig
+
+        val entryXPath = SimpleStringProperty(xmlScanConfig.entryNameXPath)
+        val dataXPath = SimpleStringProperty(xmlScanConfig.entryDataFromNameXPath)
+
+        val dialog = Dialog<AppConfig>().apply {
+            title = "Configuration"
+            headerText = "Setting are written to ${appPropertiesWrapperModel.file.value.path} during application exit"
+            graphic = fontAwesome?.create(GEAR)
+            with(dialogPane) {
+                content = Form()
+                with(content) {
+                    fieldset("XML Scanner configuration", fontAwesome?.create(CODE)) {
+                        field("XPath to the entry label") {
+                            textfield {
+                                prefWidth = 200.0
+                            }.bind(entryXPath)
+                        }
+                        field("XPath to the data, relative to entry label") {
+                            textfield {
+                                prefWidth = 200.0
+                            }.bind(dataXPath)
+                        }
+                    }
+                }
+                buttonTypes.addAll(ButtonType.OK, ButtonType.CANCEL)
+            }
+
+            setResultConverter { dialogButton ->
+                if (dialogButton?.buttonData == OK_DONE) appConfig.copy().apply {
+                    xmlScanConfig.entryNameXPath = entryXPath.value
+                    xmlScanConfig.entryDataFromNameXPath = dataXPath.value
+                } else null
+            }
+
+        }
+
+        val result: Optional<AppConfig>? = dialog.showAndWait()
+
     }
 
 }
@@ -90,6 +140,7 @@ class MainWindowController : Controller() {
 class MainWindowView : View(title = VersionLogic().title(name = "XML Scanner", artifactId = "xmlscan")) {
 
     val ctrl: MainWindowController by inject()
+    val fontAwesome: GlyphFont? = GlyphFontRegistry.font("FontAwesome")
 
     override val root = borderpane {
         prefWidth = 1300.0
@@ -103,6 +154,20 @@ class MainWindowView : View(title = VersionLogic().title(name = "XML Scanner", a
     init {
         reportBlockEntry()
         with(root) {
+            top = toolbar {
+                hbox(spacing = 5.0) {
+                    alignment = TOP_RIGHT
+                    hgrow = ALWAYS
+                    button(text = "", graphic = fontAwesome?.create(COLUMNS)) {
+                        tooltip("Configure columns (resets on each entry change") { }
+                    }
+                    button(text = "", graphic = fontAwesome?.create(GEAR)) {
+                        tooltip("Configuration") { }
+                        setOnAction { ctrl.onConfigurationButton(it) }
+                    }
+                }
+            }
+
             center = splitpane {
                 setDividerPositions(0.16)
                 splitpane {

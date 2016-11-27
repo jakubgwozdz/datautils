@@ -11,13 +11,17 @@ import java.nio.file.Paths
  *
  */
 
-class AppConfigWrapper(appConfig: AppConfig) {
-    val appConfigProperty = SimpleObjectProperty<AppConfig>(appConfig)
-    var appConfig by appConfigProperty
+class AppConfigWrapper(file: PropertiesFile, appConfig: AppConfig) {
+    val fileProperty = SimpleObjectProperty<PropertiesFile>(file)
+    val file by fileProperty
+    val configProperty = SimpleObjectProperty<AppConfig>(appConfig)
+    var config by configProperty
 }
 
 class AppPropertiesWrapperModel : ItemViewModel<AppConfigWrapper>() {
-    val appConfig = bind { item?.appConfigProperty }
+    val file = bind { item?.fileProperty }
+
+    val appConfig = bind { item?.configProperty }
             .apply { onChange { commit() } }
 }
 
@@ -25,7 +29,7 @@ class TornadoFXApp : App(MainWindowView::class) {
 
     private val appPropertiesWrapperModel: AppPropertiesWrapperModel by inject()
 
-    private val propertiesFile = SimpleObjectProperty<PropertiesFile>()
+//    private val propertiesFile = SimpleObjectProperty<PropertiesFile>()
 
     private fun configFromParams(parameters: Parameters?): String {
         return parameters?.raw
@@ -36,15 +40,20 @@ class TornadoFXApp : App(MainWindowView::class) {
     }
 
     override fun start(stage: Stage) {
-        propertiesFile.value = PropertiesFile(Paths.get(configFromParams(parameters)))
+        val propertiesFile = PropertiesFile(Paths.get(configFromParams(parameters)))
+        appPropertiesWrapperModel.file.value = propertiesFile
 
-        val properties = propertiesFile.value.readConfig()
+        val properties = propertiesFile.readConfig()
         appPropertiesWrapperModel.appConfig.value = properties
 
+        setUserAgentStylesheet(STYLESHEET_MODENA)
         super.start(stage)
     }
 
     override fun stop() {
-        propertiesFile.value.writeConfig(appPropertiesWrapperModel.appConfig.value)
+        with(appPropertiesWrapperModel) {
+//            if (isDirty) rollback()
+            file.value.writeConfig(appConfig.value)
+        }
     }
 }
