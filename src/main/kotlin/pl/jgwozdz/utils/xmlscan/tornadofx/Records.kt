@@ -64,10 +64,10 @@ class AnalyzedEntryView : View() {
                         menuitem("Expand selection to whole row(s)", "Ctrl+W", fontAwesome?.create(FontAwesome.Glyph.EXPAND), {
                             selectWholeRow()
                         })
-                        menuitem("Copy as text report", "Ctrl+C", fontAwesome?.create(FontAwesome.Glyph.COPY), {
-//                            Clipboard.getSystemClipboard().putString(ctrl.selectedEntry.value.textContent)
-//                            println("Copying ${ctrl.selectedEntry.value.textContent}")
-                        })
+//                        menuitem("Copy as text report", "Ctrl+C", fontAwesome?.create(FontAwesome.Glyph.COPY), {
+////                            Clipboard.getSystemClipboard().putString(ctrl.selectedEntry.value.textContent)
+////                            println("Copying ${ctrl.selectedEntry.value.textContent}")
+//                        })
                     }
 
 

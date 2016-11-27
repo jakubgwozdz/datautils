@@ -8,16 +8,17 @@ import javafx.collections.ObservableList
 import javafx.geometry.Insets
 import javafx.geometry.Orientation.VERTICAL
 import javafx.geometry.Pos.TOP_RIGHT
+import javafx.scene.Scene
 import javafx.scene.layout.Priority.ALWAYS
 import javafx.scene.text.TextAlignment.RIGHT
-import org.controlsfx.glyphfont.FontAwesome.Glyph.COLUMNS
-import org.controlsfx.glyphfont.FontAwesome.Glyph.GEAR
+import org.controlsfx.glyphfont.FontAwesome.Glyph.*
 import org.controlsfx.glyphfont.GlyphFont
 import org.controlsfx.glyphfont.GlyphFontRegistry
 import org.w3c.dom.Node
 import pl.jgwozdz.utils.version.VersionLogic
 import pl.jgwozdz.utils.xmlscan.*
 import tornadofx.*
+import java.lang.reflect.Method
 import java.nio.file.Path
 import java.time.Duration
 import java.time.Instant
@@ -130,6 +131,23 @@ class MainWindowView : View(title = VersionLogic().title(name = "XML Scanner", a
                 hbox(spacing = 5.0) {
                     alignment = TOP_RIGHT
                     hgrow = ALWAYS
+                    button(text = "", graphic = fontAwesome?.create(EYE)) {
+                        tooltip("Scenic view if available")
+                        setOnAction {
+//                            val urlClassLoader = URLClassLoader(arrayOf(Paths.get("scenicView.jar").toUri().toURL()), javaClass.classLoader)
+                            val clazz: Class<*>? = Class.forName("org.scenicview.ScenicView")
+                            val method: Method? = clazz?.getMethod("show", Scene::class.java)
+                            method?.invoke(null, scene)
+                        }
+//                        isDisable = !Files.isRegularFile(Paths.get("scenicView.jar"))
+                        isDisable = try {
+                            Class.forName("org.scenicview.ScenicView")
+                            false
+                        } catch (ex: Exception) {
+                            println("no ScenicView found: $ex")
+                            true
+                        }
+                    }
                     button(text = "", graphic = fontAwesome?.create(COLUMNS)) {
                         tooltip("Configure columns (resets on each entry change") { }
                         isDisable = true
