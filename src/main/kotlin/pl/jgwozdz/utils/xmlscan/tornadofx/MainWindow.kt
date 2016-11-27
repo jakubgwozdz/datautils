@@ -174,6 +174,7 @@ class MainWindowView : View(title = VersionLogic().title(name = "XML Scanner", a
                     hgrow = ALWAYS
                     button(text = "", graphic = fontAwesome?.create(COLUMNS)) {
                         tooltip("Configure columns (resets on each entry change") { }
+                        isDisable = true
                     }
                     button(text = "", graphic = fontAwesome?.create(GEAR)) {
                         tooltip("Configuration") { }

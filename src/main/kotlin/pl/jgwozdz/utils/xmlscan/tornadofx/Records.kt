@@ -7,13 +7,18 @@ import javafx.beans.value.ObservableValue
 import javafx.collections.FXCollections
 import javafx.collections.ListChangeListener
 import javafx.collections.ObservableList
+import javafx.event.ActionEvent
 import javafx.geometry.Pos
 import javafx.scene.control.SelectionMode
 import javafx.scene.control.TableColumn
+import javafx.scene.control.TablePosition
 import javafx.scene.control.TableView
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import javafx.util.Callback
+import org.controlsfx.glyphfont.FontAwesome
+import org.controlsfx.glyphfont.GlyphFont
+import org.controlsfx.glyphfont.GlyphFontRegistry
 import pl.jgwozdz.utils.xmlscan.AnalyzedData
 import pl.jgwozdz.utils.xmlscan.ScannedSingleRow
 import pl.jgwozdz.utils.xmlscan.TagStats
@@ -42,6 +47,7 @@ class AnalyzedEntryView : View() {
 
     val ctrl: AnalyzedEntryController by inject()
     var tableView: TableView<ScannedSingleRow> by singleAssign()
+    val fontAwesome: GlyphFont? = GlyphFontRegistry.font("FontAwesome")
 
     override val root = anchorpane {
         vbox {
@@ -52,15 +58,39 @@ class AnalyzedEntryView : View() {
                 isFitToWidth = true
                 vgrow = Priority.ALWAYS
                 tableView = tableview(ctrl.rows) {
-                    allAnchors = 5.0
                     isEditable = false
-
                     selectionModel.isCellSelectionEnabled = true
                     selectionModel.selectionMode = SelectionMode.MULTIPLE
+                    contextmenu {
+                        menuitem("Expand selection to whole row(s)", "Ctrl+W", fontAwesome?.create(FontAwesome.Glyph.EXPAND), {
+                            selectWholeRow(it)
+                        })
+                        menuitem("Copy as text report", "Ctrl+C", fontAwesome?.create(FontAwesome.Glyph.COPY), {
+//                            Clipboard.getSystemClipboard().putString(ctrl.selectedEntry.value.textContent)
+//                            println("Copying ${ctrl.selectedEntry.value.textContent}")
+                        })
+                    }
+
 
                 }
             }
         }
+    }
+
+    private fun selectWholeRow(it: ActionEvent) {
+        val selectionModel: TableView.TableViewSelectionModel<ScannedSingleRow> = tableView.selectionModel
+        val selectedCells: ObservableList<TablePosition<Any, Any>> = selectionModel.selectedCells
+        val selectedByRow: Map<Int, List<TablePosition<Any, Any>>> = selectedCells
+                .filter { it != null }
+                .groupBy { it.row }
+
+        selectedByRow.forEach { entry ->
+            val notSelected: List<TableColumn<ScannedSingleRow, *>> = tableView.columns
+                    .minus(entry.value.map { it -> it.tableColumn as TableColumn<ScannedSingleRow, *> })
+            notSelected
+                    .forEach { column -> tableView.selectionModel.select(entry.key, column) }
+        }
+
     }
 
     init {
@@ -99,6 +129,7 @@ class AnalyzedEntryView : View() {
                     else -> Color.BLACK
                 }
                 alignment = if (tagStats.numbersOnly) Pos.CENTER_RIGHT else Pos.CENTER_LEFT
+                paddingRight(10.0)
             }
         }
     }

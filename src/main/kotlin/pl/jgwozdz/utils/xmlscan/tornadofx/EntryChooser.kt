@@ -5,7 +5,11 @@ import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.collections.transformation.FilteredList
+import javafx.scene.input.Clipboard
 import javafx.scene.layout.Priority.ALWAYS
+import org.controlsfx.glyphfont.FontAwesome
+import org.controlsfx.glyphfont.GlyphFont
+import org.controlsfx.glyphfont.GlyphFontRegistry
 import org.w3c.dom.Element
 import tornadofx.*
 
@@ -37,6 +41,7 @@ class EntryChooserController : Controller() {
 class EntryChooserView : View() {
 
     val ctrl: EntryChooserController by inject()
+    val fontAwesome: GlyphFont? = GlyphFontRegistry.font("FontAwesome")
 
     override val root = anchorpane {
         prefWidth = 200.0
@@ -52,6 +57,12 @@ class EntryChooserView : View() {
                 vgrow = ALWAYS
                 listview(ctrl.filteredEntries) {
                     bindSelected(ctrl.selectedEntry)
+                    contextmenu {
+                        menuitem("Copy", "Ctrl+C", fontAwesome?.create(FontAwesome.Glyph.COPY), {
+                            Clipboard.getSystemClipboard().putString(ctrl.selectedEntry.value.textContent)
+//                            println("Copying ${ctrl.selectedEntry.value.textContent}")
+                        })
+                    }
                 }.cellFormat {
                     text = it.textContent
                 }
