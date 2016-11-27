@@ -1,5 +1,6 @@
 package pl.jgwozdz.utils.xmlscan.tornadofx
 
+import com.sun.javafx.scene.control.skin.TableViewSkin
 import javafx.beans.property.ReadOnlyStringWrapper
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.value.ObservableValue
@@ -78,6 +79,9 @@ class AnalyzedEntryView : View() {
                 }
             }
         }
+
+        tableView.skin = MaxPrefWidthSkin(150.0, tableView)
+
     }
 
     private fun createTableColumn(tagStats: TagStats): TableColumn<ScannedSingleRow, String?> {
@@ -98,5 +102,17 @@ class AnalyzedEntryView : View() {
             }
         }
     }
+}
+
+class MaxPrefWidthSkin(val maxPrefWidth: Double, tableView: TableView<ScannedSingleRow>?) : TableViewSkin<ScannedSingleRow>(tableView) {
+
+    override fun resizeColumnToFitContent(tc: TableColumn<ScannedSingleRow, *>?, maxRows: Int) {
+        super.resizeColumnToFitContent(tc, maxRows)
+        if (tc == null) return
+        if (tc.width > maxPrefWidth) {
+            tc.prefWidth = maxPrefWidth
+        }
+    }
+
 }
 

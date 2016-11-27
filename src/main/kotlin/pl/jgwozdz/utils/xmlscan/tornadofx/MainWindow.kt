@@ -12,6 +12,7 @@ import javafx.scene.control.ButtonBar.ButtonData.OK_DONE
 import javafx.scene.control.ButtonType
 import javafx.scene.control.Dialog
 import javafx.scene.layout.Priority.ALWAYS
+import javafx.scene.paint.Color
 import javafx.scene.text.TextAlignment.RIGHT
 import org.controlsfx.glyphfont.FontAwesome.Glyph.*
 import org.controlsfx.glyphfont.GlyphFont
@@ -106,7 +107,7 @@ class MainWindowController : Controller() {
             with(dialogPane) {
                 content = Form()
                 with(content) {
-                    fieldset("XML Scanner configuration", fontAwesome?.create(CODE)) {
+                    fieldset("XML Scanner configuration", fontAwesome?.create(CODE)?.color(Color.DARKRED)) {
                         field("XPath to the entry label") {
                             textfield {
                                 prefWidth = 200.0
