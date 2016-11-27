@@ -10,24 +10,24 @@ import javafx.scene.layout.Priority.ALWAYS
 import org.controlsfx.glyphfont.FontAwesome
 import org.controlsfx.glyphfont.GlyphFont
 import org.controlsfx.glyphfont.GlyphFontRegistry
-import org.w3c.dom.Element
+import org.w3c.dom.Node
 import tornadofx.*
 
 
 class EntryChooserController : Controller() {
 
-    val entries: ObservableList<Element> = FXCollections.observableArrayList<Element>()
-    val filteredEntries: FilteredList<Element> = FilteredList(entries, { it: Element? -> true })
+    val entries: ObservableList<Node> = FXCollections.observableArrayList<Node>()
+    val filteredEntries: FilteredList<Node> = FilteredList(entries, { true })
     val filterBy = SimpleStringProperty()
-    val selectedEntry = SimpleObjectProperty<Element>()
+    val selectedEntry = SimpleObjectProperty<Node>()
 
     init {
         reportBlockEntry()
         filterBy.addListener { observable, oldValue, newValue ->
-            filteredEntries.setPredicate { element ->
+            filteredEntries.setPredicate { entry ->
                 when {
                     newValue.isNullOrBlank() -> true
-                    element.textContent.contains(newValue) -> true
+                    entry.textContent.contains(newValue) -> true
                     else -> false
                 }
             }

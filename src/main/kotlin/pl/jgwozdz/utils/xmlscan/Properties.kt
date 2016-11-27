@@ -34,6 +34,7 @@ class PropertiesFile(val path: Path = Paths.get("xmlscan.properties")) {
     }
 
     fun readConfig(): AppConfig {
+        println("Reading config from '$path'")
         val properties = Properties(defaults).apply {
             try {
                 Files.newInputStream(path).use {
@@ -54,6 +55,7 @@ class PropertiesFile(val path: Path = Paths.get("xmlscan.properties")) {
     }
 
     fun writeConfig(appConfig: AppConfig) {
+        println("Writing config to '$path'")
         val properties = Properties(defaults)
         properties.setProperty(ENTRY_NAME_XPATH, appConfig.xmlScanConfig.entryNameXPath)
         properties.setProperty(ENTRY_DATA_FROM_NAME_XPATH, appConfig.xmlScanConfig.entryDataFromNameXPath)

@@ -1,6 +1,8 @@
 package pl.jgwozdz.utils.xmlscan
 
+import org.w3c.dom.Attr
 import org.w3c.dom.Element
+import org.w3c.dom.Node
 import org.w3c.dom.NodeList
 import org.xml.sax.InputSource
 import java.io.Closeable
@@ -22,16 +24,13 @@ class XMLScanner(pathToXml: Path, var allEntriesXPath: String, var dataXPath: St
         inputStream.close()
     }
 
-    // todo: externalize defaults to property file
-    // todo: make it configurable,
-
-    fun getAllEntries(): List<Element> {
+    fun getAllEntries(): List<Node> {
         val entriesExpression = xPathFactory.newXPath().compile(allEntriesXPath)
         val nodeList = entriesExpression.evaluate(inputSource, XPathConstants.NODESET) as NodeList
-        return nodeListAsListOfElements(nodeList)
+        return nodeListAsListOfNodes(nodeList)
     }
 
-    fun getData(entry: Element): ScannedData {
+    fun getData(entry: Node): ScannedData {
         val mainEntryExpression = xPathFactory.newXPath().compile(dataXPath)
 
         // Following steps could be done in one long line but I wouldn't understand it tomorrow
@@ -62,6 +61,10 @@ class XMLScanner(pathToXml: Path, var allEntriesXPath: String, var dataXPath: St
     fun nodeListAsListOfElements(details: NodeList): List<Element> = (0..details.length - 1)
             .map { details.item(it) }
             .filterIsInstance(Element::class.java)
+
+    fun nodeListAsListOfNodes(details: NodeList): List<Node> = (0..details.length - 1)
+            .map { details.item(it) }
+            .filter{it is Element || it is Attr}
 
 }
 

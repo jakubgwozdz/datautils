@@ -7,7 +7,6 @@ import javafx.beans.value.ObservableValue
 import javafx.collections.FXCollections
 import javafx.collections.ListChangeListener
 import javafx.collections.ObservableList
-import javafx.event.ActionEvent
 import javafx.geometry.Pos
 import javafx.scene.control.SelectionMode
 import javafx.scene.control.TableColumn
@@ -63,7 +62,7 @@ class AnalyzedEntryView : View() {
                     selectionModel.selectionMode = SelectionMode.MULTIPLE
                     contextmenu {
                         menuitem("Expand selection to whole row(s)", "Ctrl+W", fontAwesome?.create(FontAwesome.Glyph.EXPAND), {
-                            selectWholeRow(it)
+                            selectWholeRow()
                         })
                         menuitem("Copy as text report", "Ctrl+C", fontAwesome?.create(FontAwesome.Glyph.COPY), {
 //                            Clipboard.getSystemClipboard().putString(ctrl.selectedEntry.value.textContent)
@@ -77,7 +76,7 @@ class AnalyzedEntryView : View() {
         }
     }
 
-    private fun selectWholeRow(it: ActionEvent) {
+    private fun selectWholeRow() {
         val selectionModel: TableView.TableViewSelectionModel<ScannedSingleRow> = tableView.selectionModel
         val selectedCells: ObservableList<TablePosition<Any, Any>> = selectionModel.selectedCells
         val selectedByRow: Map<Int, List<TablePosition<Any, Any>>> = selectedCells
@@ -85,6 +84,7 @@ class AnalyzedEntryView : View() {
                 .groupBy { it.row }
 
         selectedByRow.forEach { entry ->
+            @Suppress("UNCHECKED_CAST")
             val notSelected: List<TableColumn<ScannedSingleRow, *>> = tableView.columns
                     .minus(entry.value.map { it -> it.tableColumn as TableColumn<ScannedSingleRow, *> })
             notSelected
