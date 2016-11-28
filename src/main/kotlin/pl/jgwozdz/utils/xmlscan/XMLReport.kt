@@ -4,7 +4,7 @@ import org.apache.commons.lang3.StringUtils
 
 class XMLReporter(val analyzedData: AnalyzedData) {
 
-    fun textReport(tags: List<String>) {
+    fun textReport(tags: List<String>): String {
 
         val tagsToDisplay = analyzedData.tagsStats
                 .filter { it.tagName in tags }
@@ -26,12 +26,12 @@ class XMLReporter(val analyzedData: AnalyzedData) {
                         }
             }
         }
-
-//        StringBuilder sb =
-        println(headers)
-        println(ruler)
-        records.forEach(::println)
-
+        val newline = System.getProperty("line.separator", "\n")
+        val sb = StringBuilder()
+        sb.append("$headers$newline")
+        sb.append("$ruler$newline")
+        records.forEach{sb.append("$it$newline")}
+        return sb.toString()
     }
 
 }

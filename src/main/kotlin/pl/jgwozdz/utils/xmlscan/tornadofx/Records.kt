@@ -12,15 +12,18 @@ import javafx.scene.control.SelectionMode
 import javafx.scene.control.TableColumn
 import javafx.scene.control.TablePosition
 import javafx.scene.control.TableView
+import javafx.scene.input.Clipboard
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import javafx.util.Callback
+import org.controlsfx.control.Notifications
 import org.controlsfx.glyphfont.FontAwesome
 import org.controlsfx.glyphfont.GlyphFont
 import org.controlsfx.glyphfont.GlyphFontRegistry
 import pl.jgwozdz.utils.xmlscan.AnalyzedData
 import pl.jgwozdz.utils.xmlscan.ScannedSingleRow
 import pl.jgwozdz.utils.xmlscan.TagStats
+import pl.jgwozdz.utils.xmlscan.XMLReporter
 import tornadofx.*
 
 //class Record(row: ScannedSingleRow) {
@@ -65,8 +68,7 @@ class AnalyzedEntryView : View() {
                             selectWholeRow()
                         })
                         menuitem("Copy as text report", null, fontAwesome?.create(FontAwesome.Glyph.COPY), {
-//                            Clipboard.getSystemClipboard().putString(ctrl.selectedEntry.value.textContent)
-//                            println("Copying ${ctrl.selectedEntry.value.textContent}")
+                            copyReportToClipboard()
                         })
                     }
 
@@ -76,7 +78,19 @@ class AnalyzedEntryView : View() {
         }
     }
 
-    private fun selectWholeRow() {
+    fun copyReportToClipboard() {
+        val selectionModel: TableView.TableViewSelectionModel<ScannedSingleRow> = tableView.selectionModel
+        val selectedCells: ObservableList<TablePosition<Any, Any>> = selectionModel.selectedCells
+        val tags = selectedCells.map { it.tableColumn }
+                .distinct()
+                .map { it.text }
+
+        val report = XMLReporter(ctrl.analyzedData.value).textReport(tags)
+        Clipboard.getSystemClipboard().putString(report)
+        Notifications.create()?.text("Report copied to clipboard, size: ${report.length}")?.show()
+    }
+
+    fun selectWholeRow() {
         val selectionModel: TableView.TableViewSelectionModel<ScannedSingleRow> = tableView.selectionModel
         val selectedCells: ObservableList<TablePosition<Any, Any>> = selectionModel.selectedCells
         val selectedByRow: Map<Int, List<TablePosition<Any, Any>>> = selectedCells
