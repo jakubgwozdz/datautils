@@ -23,7 +23,7 @@ import org.controlsfx.glyphfont.GlyphFontRegistry
 import pl.jgwozdz.utils.xmlscan.AnalyzedData
 import pl.jgwozdz.utils.xmlscan.ScannedSingleRow
 import pl.jgwozdz.utils.xmlscan.TagStats
-import pl.jgwozdz.utils.xmlscan.XMLReporter
+import pl.jgwozdz.utils.xmlscan.TextReporter
 import tornadofx.*
 
 //class Record(row: ScannedSingleRow) {
@@ -85,7 +85,7 @@ class AnalyzedEntryView : View() {
                 .distinct()
                 .map { it.text }
 
-        val report = XMLReporter(ctrl.analyzedData.value).textReport(tags)
+        val report = TextReporter(ctrl.analyzedData.value).textReport(tags)
         Clipboard.getSystemClipboard().putString(report)
         Notifications.create()?.text("Report copied to clipboard, size: ${report.length}")?.show()
     }
