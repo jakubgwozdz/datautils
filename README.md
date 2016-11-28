@@ -1,6 +1,13 @@
 # datautils
 Quick Kotlin project to analyze and present XML files
 
+## Features (and limitations)
+[x] No schema needed, just two xpaths
+[ ] Can only read \*.xml files
+[x] Remembers settings (xpaths and directory)
+[x] Dynamically creates tables for subelements
+[ ] Cannot read attributes yet
+
 ## Prerequisities
 For run, the only requirement is Java 8 JRE, update at least 40 (but why not latest?)
 
@@ -21,7 +28,9 @@ and will contain preferences for next runs. I'll use examples for World Of Warcr
 > java -jar target/xmlscan-jar-with-dependencies.jar --config=wowarmory.properties
 ```
 
-Now you need to configure xpaths to search for in selected xml files (top right corner, gear icon), e.g.:
+Now you need to configure xpaths to search for in selected xml files (top right corner, gear icon):
+
+![first run screenshot](first_run.png)
 
 Assuming your xmls looks like that (`<raids>` are distinct entries and each `<bosses>` is one row) :
 ```xml
@@ -84,6 +93,8 @@ Assuming your xmls looks like that (`<raids>` are distinct entries and each `<bo
 - XPath to the entry label: `//raids/name`
 - XPath to the data, relative to label: `./../bosses`
 
+![config screenshot](config.png)
+
 That will search for all the raids and display killed bosses :)
 
 Columns are generated dynamically and these that have all values the same, are hidden.
@@ -91,7 +102,9 @@ Columns are generated dynamically and these that have all values the same, are h
 Now you can select some cells and on context menu you'll be able to `Copy as a text report`. 
 All rows will be included in this report, but only the columns that have at least one cell selected.
 
-Now in clipboard you'll have the formatted report:
+![report menu screenshot](report_to_clipboard.png)
+
+After copy in clipboard you'll have the formatted report:
 ```
 [         name         , normalKills, normalTimestamp]
 [----------------------, -----------, ---------------]
