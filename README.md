@@ -2,11 +2,11 @@
 Quick Kotlin project to analyze and present XML files
 
 ## Features (and limitations)
-[x] No schema needed, just two xpaths
-[ ] Can only read \*.xml files
-[x] Remembers settings (xpaths and directory)
-[x] Dynamically creates tables for subelements
-[ ] Cannot read attributes yet
+- [x] No schema needed, just two xpaths
+- [ ] Can only read \*.xml files
+- [x] Remembers settings (xpaths and directory)
+- [x] Dynamically creates tables for subelements
+- [ ] Cannot read attributes yet
 
 ## Prerequisities
 For run, the only requirement is Java 8 JRE, update at least 40 (but why not latest?)
