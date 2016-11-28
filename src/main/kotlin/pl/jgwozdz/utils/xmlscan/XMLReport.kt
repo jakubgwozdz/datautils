@@ -26,11 +26,10 @@ class XMLReporter(val analyzedData: AnalyzedData) {
                         }
             }
         }
-        val newline = System.getProperty("line.separator", "\n")
         val sb = StringBuilder()
-        sb.append("$headers$newline")
-        sb.append("$ruler$newline")
-        records.forEach{sb.append("$it$newline")}
+        sb.append("$headers\n")
+        sb.append("$ruler\n")
+        records.forEach{sb.append("$it\n")}
         return sb.toString()
     }
 
