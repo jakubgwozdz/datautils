@@ -86,8 +86,8 @@ class AnalyzedEntryView : View() {
                 .map { it.text }
 
         val report = TextReporter(ctrl.analyzedData.value).textReport(tags)
-        Clipboard.getSystemClipboard().putString(report)
-        Notifications.create()?.text("Report copied to clipboard, size: ${report.length}")?.show()
+        Clipboard.getSystemClipboard().putString(report.toString())
+        Notifications.create()?.text("Report copied to clipboard, size: ${report.toString().length}")?.show()
     }
 
     fun selectWholeRow() {

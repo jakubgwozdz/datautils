@@ -30,38 +30,52 @@ class TextReporterSpec : Spek({
 
         it("should return 4 lines on report ended with a newline") {
             val textReport = textReporter.textReport(listOf("item", "quantity", "amount"))
-            expect(4) { textReport.trim().lines().size }
-            expect("") { textReport.lines().last() }
+            expect(4) { textReport.toString().trim().lines().size }
+            expect("") { textReport.toString().lines().last() }
         }
 
         it("should report lines of equal length") {
             val textReport = textReporter.textReport(listOf("item", "quantity", "amount"))
-            assertTrue { textReport.lines().map { it.length }.filter { it > 0 }.distinct().size == 1 }
+            assertTrue { textReport.toString().lines().map { it.length }.filter { it > 0 }.distinct().size == 1 }
+        }
+
+        it("should have the header as second line") {
+            val textReport = textReporter.textReport(listOf("item", "quantity", "amount"))
+            expect(textReport.header) { textReport.toString().lines()[0] }
         }
 
         it("should have a horizontal ruler as second line") {
-            assertTrue { textReporter.textReport(listOf("item", "quantity", "amount")).lines()[1].matches(Regex("[^\\w\\d]+")) }
+            val textReport = textReporter.textReport(listOf("item", "quantity", "amount"))
+            assertTrue { textReport.ruler.matches(Regex("[^\\w\\d]+")) }
+            expect(textReport.ruler) { textReport.toString().lines()[1] }
         }
 
         it("should contain specified columns") {
-            val header = textReporter.textReport(listOf("item", "amount")).lines()[0]
+            val header = textReporter.textReport(listOf("item", "amount")).header
             assertTrue { header.contains("item") }
             assertTrue { header.contains("amount") }
         }
 
         it("should not contain not specified columns") {
-            val header = textReporter.textReport(listOf("item", "amount")).lines()[0]
+            val header = textReporter.textReport(listOf("item", "amount")).header
             assertTrue { !header.contains("quantity") }
         }
 
+        it("should have rows at third and later lines") {
+            val textReport = textReporter.textReport(listOf("item", "amount"))
+            val records = textReport.records
+            for (i in 0 until records.size) expect(records[i]) { textReport.toString().lines()[i+2] }
+        }
+
+
         it("first data row should contain data from first row") {
-            val row1 = textReporter.textReport(listOf("item", "amount")).lines()[2]
+            val row1 = textReporter.textReport(listOf("item", "amount")).records[0]
             assertTrue { row1.contains("keyboard") }
             assertTrue { row1.contains("250.00") }
         }
 
         it("second data row should contain data from second row") {
-            val row2 = textReporter.textReport(listOf("item", "amount")).lines()[3]
+            val row2 = textReporter.textReport(listOf("item", "amount")).records[1]
             assertTrue { row2.contains("mouse") }
             assertTrue { row2.contains("180.00") }
         }

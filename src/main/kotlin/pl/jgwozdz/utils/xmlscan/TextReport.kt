@@ -4,22 +4,18 @@ import org.apache.commons.lang3.StringUtils
 
 class TextReporter(val analyzedData: AnalyzedData) {
 
-    fun textReport(tags: List<String>): String {
+    fun textReport(tags: List<String>): TextReport {
 
         val tagsToDisplay = analyzedData.tagsStats
                 .filter { it.tagName in tags }
 
-        val headers = computeHeader(tagsToDisplay)
+        val header = computeHeader(tagsToDisplay)
         val ruler = computeRuler(tagsToDisplay)
 
         val records = analyzedData.scannedData.rows.map { tagValueMap ->
             computeRow(tagValueMap, tagsToDisplay)
         }
-        val sb = StringBuilder()
-        sb.append("$headers\n")
-        sb.append("$ruler\n")
-        records.forEach{sb.append("$it\n")}
-        return sb.toString()
+        return TextReport(header.toString(), ruler.toString(), records.map { it.toString() })
     }
 
     fun computeRow(row: ScannedSingleRow, tagsToDisplay: List<TagStats>): List<String> {
@@ -41,5 +37,15 @@ class TextReporter(val analyzedData: AnalyzedData) {
 
     fun computeHeader(tagsToDisplay: List<TagStats>) = tagsToDisplay.map { StringUtils.center(it.tagName, it.maxLength) }
 
+}
+
+data class TextReport(val header: String, val ruler: String, val records: List<String>) {
+    override fun toString(): String {
+        val sb = StringBuilder()
+        sb.append("$header\n")
+        sb.append("$ruler\n")
+        records.forEach { sb.append("$it\n") }
+        return sb.toString()
+    }
 }
 
