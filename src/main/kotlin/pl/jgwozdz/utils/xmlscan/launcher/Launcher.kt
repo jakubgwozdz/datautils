@@ -1,17 +1,14 @@
 package pl.jgwozdz.utils.xmlscan.launcher
 
-import pl.jgwozdz.utils.commandline.ArgsParser
-
 /**
+ * Main entry point for application.
  *
  */
 
 fun main(args: Array<String>) {
 
-    println(args.asList())
-    val params = ArgsParser().parse(args)
-
-    println("'${params.named["test"]}'")
-    println("'${params.named["test2"]}'")
-
+    if (args.contains("-c"))
+        pl.jgwozdz.utils.xmlscan.console.main(args)
+    else
+        pl.jgwozdz.utils.xmlscan.tornadofx.main(args)
 }
