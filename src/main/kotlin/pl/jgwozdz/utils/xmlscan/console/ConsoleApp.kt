@@ -1,6 +1,5 @@
 package pl.jgwozdz.utils.xmlscan.console
 
-import org.w3c.dom.Node
 import pl.jgwozdz.utils.commandline.ArgsParser
 import pl.jgwozdz.utils.commandline.Parameters
 import pl.jgwozdz.utils.xmlscan.PropertiesFile
@@ -55,15 +54,14 @@ class ConsoleApp(val cmdLineParams: Parameters) {
 
         val xmlScanner = XMLScanner(resolvedFile, appConfig.xmlScanConfig.entryNameXPath, appConfig.xmlScanConfig.entryDataFromNameXPath)
 
-        val allNodes = xmlScanner.getAllEntries()
+        val foundNodes = if (entriesToSearch.isEmpty()) xmlScanner.getAllEntries().take(1) else xmlScanner.getSelectedEntries(entriesToSearch)
 
-        val nodesToPrint = filterNodes(allNodes, entriesToSearch)
-
-        if (nodesToPrint.isEmpty()) error("no entry ${if (entriesToSearch.isNotEmpty()) "containing '${entriesToSearch.joinToString(",")}' " else ""}found for xpath '${xmlScanner.allEntriesXPath}'")
+        if (foundNodes.isEmpty()) error("no entry ${if (entriesToSearch.isNotEmpty()) "containing '${entriesToSearch.joinToString(",")}' " else ""}found for xpath '${xmlScanner.allEntriesXPath}'")
 
         val analyzer = ScannedDataAnalyzer()
 
-        nodesToPrint.forEach {
+        foundNodes.forEach {
+            println("file $resolvedFile, entry ${it.textContent}")
             val scannedData = xmlScanner.getData(it)
             val analyzedData = analyzer.analyzeData(scannedData)
             val reporter = TextReporter(analyzedData)
@@ -71,18 +69,6 @@ class ConsoleApp(val cmdLineParams: Parameters) {
             val report = reporter.textReport(tags)
             print(report)
 
-        }
-    }
-
-    /**
-     * Filters nodes. If nodesToSearch is empty, this function returns only one element
-     */
-    fun filterNodes(allNodes: List<Node>, entriesToSearch: List<String>): List<Node> {
-        return if (allNodes.isEmpty()) allNodes else allNodes.let {
-            when (entriesToSearch.size) {
-                0 -> it.take(1)
-                else -> it.filter { node -> node.textContent != null && entriesToSearch.any { node.textContent.contains(it) } }
-            }
         }
     }
 

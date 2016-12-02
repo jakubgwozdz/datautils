@@ -30,6 +30,14 @@ class XMLScanner(pathToXml: Path, var allEntriesXPath: String, var dataXPath: St
         return nodeListAsListOfNodes(nodeList)
     }
 
+    fun getSelectedEntries(entriesToSearch: List<String>): List<Node> {
+
+        val filterExpression = entriesToSearch.map{ "contains(text(),'$it')" }.joinToString(" or ", "[", "]")
+        val entriesExpression = xPathFactory.newXPath().compile(allEntriesXPath+filterExpression)
+        val nodeList = entriesExpression.evaluate(inputSource, XPathConstants.NODESET) as NodeList
+        return nodeListAsListOfNodes(nodeList)
+    }
+
     fun getData(entry: Node): ScannedData {
         val mainEntryExpression = xPathFactory.newXPath().compile(dataXPath)
 
