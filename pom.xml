@@ -183,7 +183,7 @@
                         <configuration>
                             <archive>
                                 <manifest>
-                                    <mainClass>pl.jgwozdz.utils.xmlscan.tornadofx.TornadoFXApp</mainClass>
+                                    <mainClass>pl.jgwozdz.utils.xmlscan.launcher.LauncherKt</mainClass>
                                 </manifest>
                             </archive>
                             <descriptorRefs>

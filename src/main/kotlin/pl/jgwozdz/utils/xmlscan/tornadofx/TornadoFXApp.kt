@@ -24,10 +24,12 @@ class TornadoFXApp : App(MainWindowView::class) {
         val cmdLineParams = Parameters(parameters?.named?: mapOf(),
                 parameters?.unnamed?: listOf())
 
-        val propertiesFile = PropertiesFile(Paths.get(cmdLineParams.named["config"]?:"xmlscan.properties"))
-        appConfigWrapperModel.file.value = propertiesFile
+        val configFile = cmdLineParams.named["config"]?.let { Paths.get(it) } ?: PropertiesFile.DEFAULT_CONFIG
+        val propertiesFile = PropertiesFile(configFile)
 
         val properties = propertiesFile.readConfig()
+
+        appConfigWrapperModel.file.value = propertiesFile
         appConfigWrapperModel.appConfig.value = properties
 
         setUserAgentStylesheet(STYLESHEET_MODENA)

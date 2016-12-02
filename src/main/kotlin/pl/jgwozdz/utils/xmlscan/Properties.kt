@@ -10,22 +10,21 @@ import java.util.*
  *
  */
 
-data class AppConfig(var xmlScanConfig: XMLScanConfig, var initialConfig : InitialConfig)
+data class AppConfig(var xmlScanConfig: XMLScanConfig, var initialConfig: InitialConfig)
 
 data class InitialConfig(var directory: String)
 data class XMLScanConfig(var entryNameXPath: String, var entryDataFromNameXPath: String)
 
 
+class PropertiesFile(val path: Path) {
 
+    companion object {
+        internal val ENTRY_NAME_XPATH = "xmlscan.entryname.xpath"
+        internal val ENTRY_DATA_FROM_NAME_XPATH = "xmlscan.entrydatafromname.xpath"
+        internal val INITIAL_DIRECTORY = "initial.directory.path"
 
-
-
-
-internal val ENTRY_NAME_XPATH = "xmlscan.entryname.xpath"
-internal val ENTRY_DATA_FROM_NAME_XPATH = "xmlscan.entrydatafromname.xpath"
-internal val INITIAL_DIRECTORY = "initial.directory.path"
-
-class PropertiesFile(val path: Path = Paths.get("xmlscan.properties")) {
+        val DEFAULT_CONFIG = Paths.get("xmlscan.properties")
+    }
 
     private val defaults = Properties().apply {
         this[ENTRY_NAME_XPATH] = "//Entry/Name"
@@ -69,7 +68,5 @@ class PropertiesFile(val path: Path = Paths.get("xmlscan.properties")) {
         }
 
     }
-
-
 
 }
