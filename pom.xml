@@ -16,6 +16,9 @@
 
     <properties>
         <kotlin.version>1.0.5-2</kotlin.version>
+        <spek.version>1.0.89</spek.version>
+        <junit.platform.version>1.0.0-M2</junit.platform.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
@@ -46,13 +49,13 @@
         <dependency>
             <groupId>org.jetbrains.spek</groupId>
             <artifactId>spek-api</artifactId>
-            <version>1.0.89</version>
+            <version>${spek.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.spek</groupId>
             <artifactId>spek-junit-platform-engine</artifactId>
-            <version>1.0.89</version>
+            <version>${spek.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -62,12 +65,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>5.0.0-M2</version>
+            <groupId>com.winterbe</groupId>
+            <artifactId>expekt</artifactId>
+            <version>0.5.0</version>
             <scope>test</scope>
         </dependency>
-
 
     </dependencies>
 
@@ -113,14 +115,6 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>2.6</version>
-                <configuration>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.5.1</version>
                 <executions>
@@ -152,7 +146,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.19</version>
+                <version>2.19.1</version>
                 <configuration>
                     <includes>
                         <include>**/*Test.*</include>
@@ -165,7 +159,13 @@
                     <dependency>
                         <groupId>org.junit.platform</groupId>
                         <artifactId>junit-platform-surefire-provider</artifactId>
-                        <version>1.0.0-M2</version>
+                        <version>${junit.platform.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.jetbrains.spek</groupId>
+                        <artifactId>spek-junit-platform-engine</artifactId>
+                        <version>${spek.version}</version>
+                        <type>pom</type>
                     </dependency>
                 </dependencies>
             </plugin>

@@ -1,5 +1,6 @@
 package pl.jgwozdz.utils.xmlscan
 
+import com.winterbe.expekt.should
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
@@ -12,20 +13,22 @@ import kotlin.test.expect
 
 class TextReporterSpec : Spek({
     describe("An XML Reporter") {
-        val textReporter = TextReporter(
-                AnalyzedData(// two rows, three columns
-                        ScannedData(
-                                listOf(
-                                        ScannedSingleRow(mapOf("item" to "keyboard", "quantity" to "5", "amount" to "250.00")),
-                                        ScannedSingleRow(mapOf("item" to "mouse", "quantity" to "3", "amount" to "180.00"))
-                                )
-                        ),
+
+        val twoByThree = AnalyzedData(// two rows, three columns
+                ScannedData(
                         listOf(
-                                TagStats("item", null, false, 8, false, 2),
-                                TagStats("quantity", null, false, 8, true, 2),
-                                TagStats("amount", null, false, 8, true, 2)
+                                ScannedSingleRow(mapOf("item" to "keyboard", "quantity" to "5", "amount" to "250.00")),
+                                ScannedSingleRow(mapOf("item" to "mouse", "quantity" to "3", "amount" to "180.00"))
                         )
+                ),
+                listOf(
+                        TagStats("item", null, false, 8, false, 2),
+                        TagStats("quantity", null, false, 8, true, 2),
+                        TagStats("amount", null, false, 8, true, 2)
                 )
+        )
+
+        val textReporter = TextReporter(twoByThree
         )
 
         it("should return 4 lines on report ended with a newline") {
@@ -64,7 +67,7 @@ class TextReporterSpec : Spek({
         it("should have rows at third and later lines") {
             val textReport = textReporter.textReport(listOf("item", "amount"))
             val records = textReport.records
-            for (i in 0 until records.size) expect(records[i]) { textReport.toString().lines()[i+2] }
+            for (i in 0 until records.size) expect(records[i]) { textReport.toString().lines()[i + 2] }
         }
 
 
@@ -80,6 +83,14 @@ class TextReporterSpec : Spek({
             assertTrue { row2.contains("180.00") }
         }
 
+        it("should return columns in specified order") {
+            val header = textReporter.textReport(listOf("amount", "item")).header
+//            assertTrue { header.matches(Regex(".*amount.*item.*")) }
+//            assertFalse { header.matches(Regex(".*item.*amount.*")) }
+//            Validate.matchesPattern(header, ".*amount.*item.*")
+//            header.should.match(Regex(".*item.*amount.*"))
+            header.should.match(Regex(".*amount.*item.*"))
+        }
 
     }
 
