@@ -6,8 +6,8 @@ class TextReporter(val analyzedData: AnalyzedData) {
 
     fun textReport(tags: List<String>): TextReport {
 
-        val tagsToDisplay = analyzedData.tagsStats
-                .filter { it.tagName in tags }
+        val mapOfStats = analyzedData.tagsStats.map { it.tagName to it}.toMap()
+        val tagsToDisplay = tags.map { mapOfStats[it] }.filterNotNull()
 
         val header = computeHeader(tagsToDisplay)
         val ruler = computeRuler(tagsToDisplay)
