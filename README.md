@@ -7,6 +7,7 @@ Quick Kotlin project to analyze and present XML files
 - [x] Remembers settings (xpaths and directory)
 - [x] Dynamically creates tables for subelements
 - [ ] Cannot read attributes yet
+- [x] Has limited command line launcher
 
 ## Prerequisities
 For run, the only requirement is Java 8 JRE, update at least 40 (but why not latest?)
@@ -16,7 +17,7 @@ For clone and build, you'll need JDK, Maven and git.
 ## Setup
 Clone to your pc and build:
 ```shell
-> git clone https://github.com/jakubgwozdz/datautils.git -b v0.2.0
+> git clone https://github.com/jakubgwozdz/datautils.git -b v0.3.0
 > cd datautils
 > mvn clean package
 ```
@@ -125,6 +126,21 @@ After copy in clipboard you'll have the formatted report:
 [Kel'Thuzad            ,          20,   1246401558000]
 ```
 
+## Command-line usage
 
+With `-c` parameter, you can omit the graphical interface and just run the report generation
+from command line.
 
+```cmd
+> java -jar target\xmlscan-jar-with-dependencies.jar -c \ 
+        --config=wowarmory.properties \ 
+        --inputFile=kwinto_shadowsong_eu.xml \
+        --entry=Naxxramas \ 
+        --columns=normalKills,name
+```
+
+When used with `-c`, the `--inputFile=<file.xml>` parameter is required, the rest is optional:
+* `--config=<config.properties>` specifies alternate config file (default: `xmlscan.properties`)
+* `--entry=<comma separated entries>` specifies entry(entries) to analyze and report (default: first entry in the file)
+* `--columns=<comma separated column names>` columns to display (default: all)
 
