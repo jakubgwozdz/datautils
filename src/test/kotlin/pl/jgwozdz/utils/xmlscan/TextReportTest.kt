@@ -4,13 +4,15 @@ import com.winterbe.expekt.should
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
+import org.junit.platform.runner.JUnitPlatform
+import org.junit.runner.RunWith
 import kotlin.test.assertTrue
 import kotlin.test.expect
 
 /**
  *
  */
-
+@RunWith(JUnitPlatform::class)
 class TextReporterSpec : Spek({
     describe("An XML Reporter") {
 
@@ -85,10 +87,6 @@ class TextReporterSpec : Spek({
 
         it("should return columns in specified order") {
             val header = textReporter.textReport(listOf("amount", "item")).header
-//            assertTrue { header.matches(Regex(".*amount.*item.*")) }
-//            assertFalse { header.matches(Regex(".*item.*amount.*")) }
-//            Validate.matchesPattern(header, ".*amount.*item.*")
-//            header.should.match(Regex(".*item.*amount.*"))
             header.should.match(Regex(".*amount.*item.*"))
         }
 
