@@ -7,6 +7,7 @@ import javafx.scene.layout.Priority.ALWAYS
 import javafx.stage.DirectoryChooser
 import javafx.stage.Window
 import tornadofx.*
+import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -50,19 +51,15 @@ class FileChooserController : Controller() {
 
     fun updateFileList() {
         files.clear()
-        if (directoryToScan.path == null) return
-        try {
-            Files.newDirectoryStream(directoryToScan.path) { isXmlFile(it) }
-                    .forEach {
-                        files.add(it)
-                    }
-        } catch (e: Exception) {
-            println("unreadable dir '$directoryToScan.path': $e")
-        }
-
+        val directory = directoryToScan.path?.toAbsolutePath() ?: return
+        files += directory.toFile().walkTopDown()
+                .onFail { file, ioException ->  }
+                .maxDepth(3)
+                .map(File::toPath)
+                .filter { isXmlFile(it) }
     }
 
-    fun isXmlFile(it: Path) = Files.isRegularFile(it) && it.fileName.toString().toLowerCase().endsWith(".xml")
+    fun isXmlFile(path: Path) = Files.isRegularFile(path) && path.fileName.toString().toLowerCase().endsWith(".xml")
 
 }
 
@@ -115,7 +112,7 @@ class FileChooserView : View() {
                 listview(ctrl.files) {
                     bindSelected(ctrl.selectedFile)
                 }.cellFormat {
-                    text = it.fileName.toString()
+                    text = dirToScanModel.path.value.relativize(it).toString()
                 }
             }
         }
