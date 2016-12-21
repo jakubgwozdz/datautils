@@ -4,7 +4,7 @@
 
     <groupId>pl.jgwozdz.utils</groupId>
     <artifactId>xmlscan</artifactId>
-    <version>0.3.6</version>
+    <version>0.3.7</version>
     <packaging>jar</packaging>
 
     <scm>
@@ -15,10 +15,11 @@
     </scm>
 
     <properties>
-        <kotlin.version>1.0.5-2</kotlin.version>
+        <kotlin.version>1.0.5-3</kotlin.version>
         <spek.version>1.0.89</spek.version>
         <surefire.version>2.19.1</surefire.version>
         <junit.platform.version>1.0.0-M2</junit.platform.version>
+        <jgitflow.version>1.0-m5.1</jgitflow.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -189,11 +190,14 @@
             <plugin>
                 <groupId>external.atlassian.jgitflow</groupId>
                 <artifactId>jgitflow-maven-plugin</artifactId>
-                <version>1.0-m5.1</version>
+                <version>${jgitflow.version}</version>
                 <configuration>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                     <enableFeatureVersions>true</enableFeatureVersions>
                     <noDeploy>true</noDeploy>
+                    <flowInitContext>
+                        <versionTagPrefix>v</versionTagPrefix>
+                    </flowInitContext>
                 </configuration>
             </plugin>
         </plugins>
