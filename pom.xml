@@ -4,7 +4,7 @@
 
     <groupId>pl.jgwozdz.utils</groupId>
     <artifactId>xmlscan</artifactId>
-    <version>0.3.4</version>
+    <version>0.3.5-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <scm>
