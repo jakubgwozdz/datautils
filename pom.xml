@@ -193,6 +193,7 @@
                 <configuration>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                     <enableFeatureVersions>true</enableFeatureVersions>
+                    <noDeploy>true</noDeploy>
                 </configuration>
             </plugin>
         </plugins>
