@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>pl.jgwozdz.utils</groupId>
@@ -11,8 +12,8 @@
         <url>https://github.com/jakubgwozdz/datautils.git</url>
         <connection>scm:git:https://github.com/jakubgwozdz/datautils.git</connection>
         <developerConnection>scm:git:https://github.com/jakubgwozdz/datautils.git</developerConnection>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
 
     <properties>
         <kotlin.version>1.0.5-2</kotlin.version>
@@ -81,22 +82,22 @@
     </dependencies>
 
     <!--<repositories>-->
-        <!--<repository>-->
-            <!--<id>bintray</id>-->
-            <!--<url>https://dl.bintray.com/jetbrains/spek/</url>-->
-            <!--<releases>-->
-                <!--<enabled>true</enabled>-->
-            <!--</releases>-->
-        <!--</repository>-->
+    <!--<repository>-->
+    <!--<id>bintray</id>-->
+    <!--<url>https://dl.bintray.com/jetbrains/spek/</url>-->
+    <!--<releases>-->
+    <!--<enabled>true</enabled>-->
+    <!--</releases>-->
+    <!--</repository>-->
     <!--</repositories>-->
     <!--<pluginRepositories>-->
-        <!--<pluginRepository>-->
-            <!--<id>bintray</id>-->
-            <!--<url>https://dl.bintray.com/jetbrains/spek/</url>-->
-            <!--<releases>-->
-                <!--<enabled>true</enabled>-->
-            <!--</releases>-->
-        <!--</pluginRepository>-->
+    <!--<pluginRepository>-->
+    <!--<id>bintray</id>-->
+    <!--<url>https://dl.bintray.com/jetbrains/spek/</url>-->
+    <!--<releases>-->
+    <!--<enabled>true</enabled>-->
+    <!--</releases>-->
+    <!--</pluginRepository>-->
     <!--</pluginRepositories>-->
 
     <build>
@@ -206,16 +207,29 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>2.5.3</version>
+                <groupId>external.atlassian.jgitflow</groupId>
+                <artifactId>jgitflow-maven-plugin</artifactId>
+                <version>1.0-m5.1</version>
                 <configuration>
-                    <useReleaseProfile>false</useReleaseProfile>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
-                    <tagNameFormat>v@{project.version}</tagNameFormat>
-                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <pushReleases>true</pushReleases>
+                    <pushFeatures>true</pushFeatures>
+                    <enableFeatureVersions>true</enableFeatureVersions>
+                    <!-- see goals wiki page for configuration options -->
                 </configuration>
             </plugin>
+            <!--<plugin>-->
+            <!--<groupId>org.apache.maven.plugins</groupId>-->
+            <!--<artifactId>maven-release-plugin</artifactId>-->
+            <!--<version>2.5.3</version>-->
+            <!--<configuration>-->
+            <!--<autoVersionSubmodules>true</autoVersionSubmodules>-->
+            <!--<goals>deploy</goals>-->
+            <!--<pushChanges>false</pushChanges>-->
+            <!--<localCheckout>true</localCheckout>-->
+            <!--<tagNameFormat>mvn-@{project.version}</tagNameFormat>-->
+            <!--</configuration>-->
+            <!--</plugin>-->
         </plugins>
     </build>
 
