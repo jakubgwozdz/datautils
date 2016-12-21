@@ -31,7 +31,7 @@ and will contain preferences for next runs. I'll use examples for World Of Warcr
 
 Now you need to configure xpaths to search for in selected xml files (top right corner, gear icon):
 
-![first run screenshot](first_run.png)
+![first run screenshot](images/first_run.png)
 
 Assuming your xmls looks like that (`<raids>` are distinct entries and each `<bosses>` is one row) :
 ```xml
@@ -94,7 +94,7 @@ Assuming your xmls looks like that (`<raids>` are distinct entries and each `<bo
 - XPath to the entry label: `//raids/name`
 - XPath to the data, relative to label: `./../bosses`
 
-![config screenshot](config.png)
+![config screenshot](images/config.png)
 
 That will search for all the raids and display killed bosses :)
 
@@ -103,7 +103,7 @@ Columns are generated dynamically and these that have all values the same, are h
 Now you can select some cells and on context menu you'll be able to `Copy as a text report`. 
 All rows will be included in this report, but only the columns that have at least one cell selected.
 
-![report menu screenshot](report_to_clipboard.png)
+![report menu screenshot](images/report_to_clipboard.png)
 
 After copy in clipboard you'll have the formatted report:
 ```

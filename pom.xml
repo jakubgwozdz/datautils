@@ -16,7 +16,7 @@
 
     <properties>
         <kotlin.version>1.0.5-2</kotlin.version>
-        <spek.version>1.1.19</spek.version>
+        <spek.version>1.0.89</spek.version>
         <surefire.version>2.19.1</surefire.version>
         <junit.platform.version>1.0.0-M2</junit.platform.version>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -80,24 +80,24 @@
 
     </dependencies>
 
-    <repositories>
-        <repository>
-            <id>bintray</id>
-            <url>https://dl.bintray.com/jetbrains/spek/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-        </repository>
-    </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>bintray</id>
-            <url>https://dl.bintray.com/jetbrains/spek/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-        </pluginRepository>
-    </pluginRepositories>
+    <!--<repositories>-->
+        <!--<repository>-->
+            <!--<id>bintray</id>-->
+            <!--<url>https://dl.bintray.com/jetbrains/spek/</url>-->
+            <!--<releases>-->
+                <!--<enabled>true</enabled>-->
+            <!--</releases>-->
+        <!--</repository>-->
+    <!--</repositories>-->
+    <!--<pluginRepositories>-->
+        <!--<pluginRepository>-->
+            <!--<id>bintray</id>-->
+            <!--<url>https://dl.bintray.com/jetbrains/spek/</url>-->
+            <!--<releases>-->
+                <!--<enabled>true</enabled>-->
+            <!--</releases>-->
+        <!--</pluginRepository>-->
+    <!--</pluginRepositories>-->
 
     <build>
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
